@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "Aura - Senior Success Hub",
+  "description": "Assistente IA contextual para o sistema Senior X — DAP com RAG.",
+  "version": "2.0",
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>",
+    "http://localhost:8000/*",
+    "http://127.0.0.1:8000/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.senior.com.br/*"],
+      "js": ["shield.js", "dotlottie-player.js", "content.js"],
+      "css": ["style.css"],
+      "world": "MAIN",
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["https://*.senior.com.br/*"],
+      "js": ["bridge.js"],
+      "world": "ISOLATED",
+      "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["aura.json"],
+      "matches": ["https://*.senior.com.br/*"]
+    }
+  ]
+}

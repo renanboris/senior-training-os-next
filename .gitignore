@@ -1,0 +1,46 @@
+# Ambientes Virtuais Python
+venv/
+env/
+.env
+
+# Arquivos compilados e cache do Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# 🔴 DADOS SENSÍVEIS E MEMÓRIA DO ROBÔ (NÃO COMMITAR!)
+brain.db
+brain.db-journal
+brain.db-shm
+brain.db-wal
+aura_cache.db
+relatorio_auto_cura.json
+
+# 🔴 ARTEFATOS DE RUNTIME E PRODUÇÃO (O lixo gerado pelos testes)
+roteiros_salvos/
+audios_gerados/
+videos_gerados/
+videos_prontos/
+scorm_exports/
+documentacao_pdf/
+
+# Tipos de arquivos de mídia e logs
+*.mp4
+*.webm
+*.mp3
+*.wav
+*.zip
+*.pdf
+*.log
+
+# Arquivos temporários do OS
+.DS_Store
+Thumbs.db
+
+# 🔴 PASTAS LEGADAS / BACKUPS
+old_but_gold/
+
+# Exceção (Asset do sistema):
+!trilha.mp3

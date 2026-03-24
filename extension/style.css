@@ -1,0 +1,350 @@
+/* ==========================================================================
+   AURA DAP — Production CSS
+   Glassmorphism Enterprise Edition · 2026
+   ========================================================================== */
+
+/* ─── 1. CONTAINER PRINCIPAL E BADGE DE NOTIFICAÇÃO ──────── */
+#aura-floating-container {
+    position: fixed !important;
+    bottom: 30px !important;
+    right: 30px !important;
+    width: 170px !important;  
+    height: 170px !important; 
+    z-index: 2147483647 !important;
+    display: block !important;
+    pointer-events: none !important;
+    user-select: none !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif !important;
+}
+
+#aura-floating-container > * { 
+    pointer-events: auto !important; 
+}
+
+/* A Bolinha Vermelha (Notificação Proativa) */
+.aura-badge {
+    position: absolute !important;
+    /* AJUSTE AQUI: Quanto MAIOR o top, mais para baixo. Quanto MAIOR o right, mais para a esquerda */
+    top: 50px !important;    
+    right: 55px !important;  
+    background: #ef4444 !important;
+    color: white !important;
+    font-size: 11px !important;
+    font-weight: bold !important;
+    width: 20px !important;
+    height: 20px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.5) !important;
+    z-index: 10 !important;
+    opacity: 0 !important;
+    transform: scale(0) !important;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    pointer-events: none !important;
+}
+
+.aura-badge.active {
+    opacity: 1 !important;
+    transform: scale(1) !important;
+}
+
+/* ─── 2. MASCOTE LOTTIE ───────────────────────────────────────────────────── */
+#aura-lottie-player {
+    width: 170px !important;
+    height: 170px !important;
+    cursor: pointer !important;
+    display: block !important;
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.18)) !important;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    will-change: transform !important;
+}
+
+#aura-lottie-player:hover { 
+    transform: scale(1.07) !important; 
+}
+
+#aura-lottie-player:active { 
+    cursor: grabbing !important; 
+    transform: scale(0.93) !important; 
+}
+
+/* ─── 3. BALÃO DE CONVERSA ────────────────────────────────────────────────── */
+#aura-speech-bubble {
+    display: none !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+    position: absolute !important;
+    bottom: calc(100% - 35px) !important;
+    right: 0 !important;                  
+    width: 320px !important;
+    max-width: calc(100vw - 70px) !important;
+    background: rgba(255, 255, 255, 0.96) !important;
+    backdrop-filter: blur(16px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.55) !important;
+    border-radius: 20px 20px 4px 20px !important;
+    padding: 20px !important;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.06), inset 0 0 0 1px rgba(255,255,255,0.45) !important;
+    transform-origin: bottom right !important;
+    z-index: 1 !important;
+}
+
+#aura-speech-bubble.active { 
+    display: flex !important; 
+    animation: aura-pop-in 0.38s cubic-bezier(0.16, 1, 0.3, 1) both !important; 
+}
+
+/* A classe que esconde o input de forma forçada quando necessário */
+#aura-speech-bubble.no-input .aura-input-wrapper { 
+    display: none !important; 
+}
+
+@keyframes aura-pop-in {
+    from { 
+        opacity: 0; 
+        transform: scale(0.88) translateY(16px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: scale(1) translateY(0); 
+    }
+}
+
+#aura-speech-bubble::after {
+    content: '' !important; 
+    position: absolute !important; 
+    bottom: -9px !important; 
+    right: 100px !important; 
+    width: 18px !important; 
+    height: 18px !important;
+    background: #f9fafb !important; 
+    border-right: 1px solid rgb(255, 255, 255) !important; 
+    border-bottom: 1px solid rgb(255, 255, 255) !important;
+    clip-path: polygon(100% 0, 0 0, 100% 100%) !important;
+}
+
+/* ─── 4. TEXTO DO BALÃO E SCROLLBAR ───────────────────────────────────────── */
+.aura-text-wrapper { 
+    display: flex !important; 
+    flex-direction: column !important; 
+    gap: 8px !important; 
+}
+
+.aura-text {
+    font-size: 14px !important; 
+    line-height: 1.6 !important; 
+    color: #1e293b !important; 
+    font-weight: 400 !important;
+    margin: 0 !important; 
+    min-height: 20px !important; 
+    max-height: 220px !important; 
+    overflow-y: auto !important;
+    padding-right: 6px !important; 
+    transition: opacity 0.2s ease !important;
+}
+
+.aura-text::-webkit-scrollbar { width: 3px !important; }
+.aura-text::-webkit-scrollbar-track { background: transparent !important; }
+.aura-text::-webkit-scrollbar-thumb { background: #cbd5e1 !important; border-radius: 4px !important; }
+.aura-text::-webkit-scrollbar-thumb:hover { background: #94a3b8 !important; }
+
+/* ─── 4b. BOTÃO FECHAR ────────────────────────────────────────────────────── */
+.aura-btn-close {
+    position: absolute !important; 
+    top: 10px !important; 
+    right: 10px !important; 
+    background: transparent !important;
+    border: none !important; 
+    color: #cbd5e1 !important; 
+    font-size: 14px !important; 
+    cursor: pointer !important;
+    padding: 4px 6px !important; 
+    border-radius: 50% !important; 
+    line-height: 1 !important; 
+    transition: background 0.2s ease, color 0.2s ease !important;
+}
+
+.aura-btn-close:hover { 
+    background: #fee2e2 !important; 
+    color: #ef4444 !important; 
+}
+
+/* ─── 5. INPUT AREA E BOTÃO ENVIO ─────────────────────────────────────────── */
+.aura-input-wrapper {
+    display: flex !important; 
+    align-items: center !important; 
+    background: #f1f5f9 !important; 
+    border-radius: 100px !important;
+    padding: 4px 4px 4px 14px !important; 
+    border: 1.5px solid transparent !important; 
+    transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease !important;
+}
+
+.aura-input-wrapper:focus-within { 
+    background: #ffffff !important; 
+    border-color: #00ddb3 !important; 
+    box-shadow: 0 0 0 3px rgba(0, 221, 179, 0.18) !important; 
+}
+
+#aura-prompt-input { 
+    flex: 1 !important; 
+    border: none !important; 
+    background: transparent !important; 
+    font-size: 13px !important; 
+    color: #334155 !important; 
+    outline: none !important; 
+    font-family: inherit !important; 
+    min-width: 0 !important; 
+}
+
+#aura-prompt-input::placeholder { color: #94a3b8 !important; }
+
+#aura-prompt-input:disabled { 
+    opacity: 0.5 !important; 
+    cursor: not-allowed !important; 
+}
+
+.aura-btn-send {
+    background: #00ddb3 !important; 
+    color: #ffffff !important; 
+    border: none !important; 
+    border-radius: 50% !important;
+    width: 32px !important; 
+    height: 32px !important; 
+    min-width: 32px !important; 
+    display: flex !important; 
+    align-items: center !important; 
+    justify-content: center !important; 
+    cursor: pointer !important; 
+    font-size: 14px !important; 
+    transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease !important; 
+    box-shadow: 0 2px 8px rgba(0, 221, 179, 0.35) !important; 
+    flex-shrink: 0 !important;
+}
+
+.aura-btn-send:hover { 
+    background: #00c49f !important; 
+    transform: scale(1.08) !important; 
+    box-shadow: 0 4px 14px rgba(0, 221, 179, 0.45) !important; 
+}
+
+.aura-btn-send:active { 
+    transform: scale(0.92) !important; 
+    box-shadow: none !important; 
+}
+
+.aura-btn-send:disabled { 
+    background: #cbd5e1 !important; 
+    cursor: wait !important; 
+    box-shadow: none !important; 
+    transform: none !important; 
+}
+
+/* ─── 6. CHIPS DE SUGESTÃO E FEEDBACK PREMIUM ─────────────────────────────── */
+.aura-options { 
+    display: flex !important; 
+    flex-wrap: wrap !important; 
+    gap: 6px !important; 
+    margin-top: 2px !important; 
+    padding-top: 8px !important; 
+    border-top: 1px solid rgba(0, 0, 0, 0.06) !important; 
+}
+
+.aura-btn { 
+    background: rgba(0, 221, 179, 0.08) !important; 
+    border: 1px solid rgba(0, 221, 179, 0.4) !important; 
+    color: #007a6b !important; 
+    padding: 5px 13px !important; 
+    border-radius: 100px !important; 
+    font-size: 12px !important; 
+    font-weight: 500 !important; 
+    cursor: pointer !important; 
+    font-family: inherit !important; 
+    white-space: nowrap !important; 
+    transition: all 0.2s ease !important; 
+    outline: none !important; 
+}
+
+.aura-btn:hover { 
+    background: #00ddb3 !important; 
+    border-color: #00ddb3 !important; 
+    color: #ffffff !important; 
+    transform: translateY(-2px) !important; 
+    box-shadow: 0 4px 10px rgba(0, 221, 179, 0.3) !important; 
+}
+
+/* Feedback UI (Joinha) */
+.aura-feedback-wrapper {
+    display: none !important; /* 🟢 FIX: Nasce sempre invisível */
+    align-items: center !important; 
+    gap: 6px !important; 
+    margin-top: 4px !important;
+}
+
+/* 🟢 FIX: O JavaScript vai adicionar esta classe quando a IA responder */
+.aura-feedback-wrapper.show-feedback {
+    display: flex !important;
+}
+
+.aura-btn-feedback {
+    background: #f1f5f9 !important; 
+    border: 1px solid transparent !important; 
+    border-radius: 6px !important;
+    cursor: pointer !important; 
+    display: flex !important; 
+    align-items: center !important; 
+    justify-content: center !important;
+    padding: 4px 8px !important; 
+    color: #64748b !important; 
+    transition: all 0.2s ease !important;
+}
+
+.aura-btn-feedback svg { 
+    width: 14px !important; 
+    height: 14px !important; 
+}
+
+.aura-btn-feedback:hover { 
+    background: #e2e8f0 !important; 
+    color: #00ddb3 !important; 
+    transform: translateY(-1px) !important; 
+}
+
+#aura-btn-dislike:hover { 
+    color: #ef4444 !important; 
+}
+
+.aura-feedback-msg { 
+    font-size: 12px !important; 
+    font-weight: 500 !important; 
+    padding-left: 4px !important; 
+}
+
+/* ─── ESTADO DE LOADING (3 Pontinhos Animados) ─── */
+.aura-typing-dots {
+    display: inline-flex !important;
+    gap: 4px !important;
+    align-items: center !important;
+    height: 16px !important;
+    padding-left: 4px !important;
+}
+.aura-typing-dots span {
+    width: 6px !important;
+    height: 6px !important;
+    border-radius: 50% !important;
+    background: #00ddb3 !important;
+    display: block !important;
+    animation: aura-dot-bounce 1.2s ease infinite !important;
+}
+.aura-typing-dots span:nth-child(2) { animation-delay: 0.2s !important; }
+.aura-typing-dots span:nth-child(3) { animation-delay: 0.4s !important; }
+
+@keyframes aura-dot-bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-5px); opacity: 1; }
+}
+
+#aura-speech-bubble .aura-options:empty { display: none !important; padding-top: 0 !important; border-top: none !important; }
+@keyframes aura-pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.04); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }

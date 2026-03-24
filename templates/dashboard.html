@@ -1,0 +1,3519 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Training OS · Knowledge Platform</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2300e5e5'/><path d='M45 20 L30 55 L48 55 L45 80 L70 45 L52 45 Z' fill='%23060a14'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500;700&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script>
+  (function() {
+    var saved = localStorage.getItem('training-os-theme');
+    var sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (saved === 'light' || (!saved && !sysDark)) {
+      document.documentElement.classList.add('light');
+    }
+  })();
+</script>
+<style>
+/* ═══════════════════════════════════════════
+   TOKENS & RESET
+═══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:          #060a14;
+  --bg-2:        #0a0f1e;
+  --bg-3:        #0f1628;
+  --surface:     #111827;
+  --surface-2:   #1a2438;
+  --surface-3:   #1f2d45;
+  --border:      rgba(255,255,255,0.06);
+  --border-2:    rgba(255,255,255,0.10);
+  --cyan:        #00e5e5;
+  --cyan-2:      #00b8b8;
+  --cyan-dim:    rgba(0,229,229,0.08);
+  --cyan-glow:   rgba(0,229,229,0.25);
+  --amber:       #f59e0b;
+  --amber-dim:   rgba(245,158,11,0.1);
+  --green:       #10b981;
+  --green-dim:   rgba(16,185,129,0.1);
+  --red:         #ef4444;
+  --red-dim:     rgba(239,68,68,0.1);
+  --violet:      #8b5cf6;
+  --violet-dim:  rgba(139,92,246,0.1);
+  --blue:        #3b82f6;
+  --blue-dim:    rgba(59,130,246,0.1);
+  --text:        #f1f5f9;
+  --text-2:      #94a3b8;
+  --text-3:      #475569;
+  --font-display: 'Outfit', system-ui, sans-serif;
+  --font-ui:      'Geist', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', 'Courier New', monospace;
+  --radius:       12px;
+  --radius-sm:    8px;
+  --radius-xs:    6px;
+  --ease-out:     cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ═══════════════════════════════════════════
+   LIGHT THEME TOKENS
+═══════════════════════════════════════════ */
+html.light {
+  --bg:          #f5f7fa;
+  --bg-2:        #eef1f6;
+  --bg-3:        #e4e8f0;
+  --surface:     #ffffff;
+  --surface-2:   #f0f3f9;
+  --surface-3:   #e2e7f0;
+  --border:      rgba(0,0,0,0.07);
+  --border-2:    rgba(0,0,0,0.12);
+  --cyan:        #007a7a;
+  --cyan-2:      #006060;
+  --cyan-dim:    rgba(0,122,122,0.08);
+  --cyan-glow:   rgba(0,122,122,0.18);
+  --amber:       #b45309;
+  --amber-dim:   rgba(180,83,9,0.08);
+  --green:       #059669;
+  --green-dim:   rgba(5,150,105,0.08);
+  --red:         #dc2626;
+  --red-dim:     rgba(220,38,38,0.08);
+  --violet:      #6d28d9;
+  --violet-dim:  rgba(109,40,217,0.08);
+  --blue:        #1d4ed8;
+  --blue-dim:    rgba(29,78,216,0.08);
+  --text:        #0f172a;
+  --text-2:      #475569;
+  --text-3:      #94a3b8;
+}
+
+html.light body::after { opacity: 0.012; }
+
+html.light #sidebar::before {
+  background: radial-gradient(ellipse 120% 60% at 50% 0%, rgba(0,122,122,0.05) 0%, transparent 70%);
+}
+
+/* Smooth theme transitions */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-duration: 0.25s;
+  transition-timing-function: ease;
+}
+/* Exclude animation-driven elements */
+/* FIX BUG-HTML-3: .bar-fill REMOVIDO desta lista. transition:none cancelava
+   o transform:scaleX 1.2s das barras de velocidade, fazendo-as saltar.
+   Apenas elementos genuinamente animados ficam aqui. */
+.loader-ring, .live-dot, .rec-dot, .roadmap-progress-fill,
+.toast, [class*="pulse"], canvas { transition: none !important; }
+
+html, body {
+  height: 100%; width: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ═══════════════════════════════════════════
+   SCROLLBAR
+═══════════════════════════════════════════ */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
+
+/* ═══════════════════════════════════════════
+   NOISE TEXTURE OVERLAY
+═══════════════════════════════════════════ */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.022; pointer-events: none; z-index: 9999;
+}
+
+/* ═══════════════════════════════════════════
+   LAYOUT SHELL
+═══════════════════════════════════════════ */
+#shell {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  grid-template-rows: 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════ */
+#sidebar {
+  grid-column: 1;
+  background: var(--bg-2);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  z-index: 10;
+}
+
+/* Sidebar ambient glow */
+#sidebar::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 200px;
+  background: radial-gradient(ellipse 120% 60% at 50% 0%, rgba(0,229,229,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.sidebar-logo {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+  position: relative; z-index: 1;
+}
+
+.logo-mark {
+  width: 34px; height: 34px;
+  background: var(--cyan);
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 20px var(--cyan-glow), 0 0 40px rgba(0,229,229,0.1);
+  flex-shrink: 0;
+}
+
+.logo-mark svg { width: 18px; height: 18px; }
+
+.logo-text { flex: 1; min-width: 0; }
+.logo-title {
+  font-family: var(--font-ui);
+  font-size: 14px; font-weight: 700;
+  color: var(--text); letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+.logo-sub {
+  font-size: 9px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: var(--cyan); opacity: 0.8; margin-top: 1px;
+}
+
+/* Live status indicator */
+.live-pill {
+  display: flex; align-items: center; gap: 5px;
+  padding: 3px 8px; border-radius: 99px;
+  border: 1px solid var(--border-2);
+  background: var(--surface);
+}
+.live-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+  animation: live-pulse 2s ease infinite;
+}
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.85); }
+}
+.live-text { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-2); }
+
+/* Nav sections */
+.nav-section { padding: 16px 0 4px; }
+.nav-section-label {
+  padding: 0 20px 8px;
+  font-size: 9px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: var(--text-3);
+}
+
+.nav-btn {
+  width: 100%;
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 20px;
+  background: transparent; border: none;
+  color: var(--text-2);
+  font-family: var(--font-ui); font-size: 13px; font-weight: 500;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+  border-left: 2px solid transparent;
+  text-align: left;
+  position: relative;
+}
+
+.nav-btn:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+
+.nav-btn.active {
+  color: var(--cyan);
+  background: var(--cyan-dim);
+  border-left-color: var(--cyan);
+  font-weight: 600;
+}
+
+.nav-btn .nav-icon {
+  width: 16px; height: 16px; flex-shrink: 0;
+  opacity: 0.7; transition: opacity 0.15s;
+}
+.nav-btn:hover .nav-icon, .nav-btn.active .nav-icon { opacity: 1; }
+
+/* Roadmap nav items */
+.nav-roadmap-item {
+  width: 100%;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 20px;
+  font-family: var(--font-ui); font-size: 12px;
+  color: var(--text-3); cursor: default;
+}
+
+.roadmap-badge {
+  font-size: 8px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 1px;
+  padding: 2px 6px; border-radius: 4px;
+}
+.badge-soon    { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); }
+.badge-beta    { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(59,130,246,0.2); }
+.badge-planned { background: var(--surface-2); color: var(--text-3); border: 1px solid var(--border); }
+.badge-wip     { background: var(--violet-dim); color: var(--violet); border: 1px solid rgba(139,92,246,0.2); animation: wip-flash 3s ease infinite; }
+@keyframes wip-flash { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
+/* Sidebar footer */
+.sidebar-footer {
+  margin-top: auto;
+  padding: 14px 16px;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+
+.user-avatar {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--surface-3), var(--surface-2));
+  border: 1px solid var(--border-2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: var(--text-2);
+  flex-shrink: 0;
+}
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 12px; font-weight: 600; color: var(--text); }
+.user-version {
+  font-family: var(--font-mono);
+  font-size: 10px; color: var(--text-3);
+}
+
+/* ═══════════════════════════════════════════
+   MAIN AREA
+═══════════════════════════════════════════ */
+#main {
+  grid-column: 2;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ─── TAB PAGES ─── */
+.tab-page {
+  flex: 1; overflow: hidden;
+  display: none; flex-direction: column;
+}
+.tab-page.active { display: flex; }
+
+/* ═══════════════════════════════════════════
+   OVERVIEW PAGE
+═══════════════════════════════════════════ */
+#page-overview {
+  overflow-y: auto;
+  padding: 32px 36px;
+  gap: 28px;
+}
+
+.overview-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  animation: fade-up 0.5s var(--ease-out) both;
+}
+
+.overview-title {
+  font-family: var(--font-display);
+  font-size: 34px; font-weight: 700;
+  color: var(--text); line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+.overview-title em {
+  font-style: normal;
+  color: var(--cyan);
+}
+.overview-sub {
+  font-size: 13px; color: var(--text-3); margin-top: 6px;
+  font-style: normal; font-family: var(--font-ui);
+  display: flex; align-items: center; gap: 8px;
+}
+
+.date-chip {
+  font-family: var(--font-mono);
+  font-size: 10px; padding: 2px 8px;
+  border: 1px solid var(--border-2); border-radius: 99px;
+  color: var(--text-3);
+}
+
+/* ─── KPI GRID ─── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  animation: fade-up 0.5s 0.05s var(--ease-out) both;
+}
+
+.kpi-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  position: relative; overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s;
+  cursor: default;
+}
+.kpi-card:hover { border-color: var(--border-2); transform: translateY(-1px); }
+
+.kpi-accent {
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  border-radius: 2px 2px 0 0;
+}
+
+.kpi-label {
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--text-3); margin-bottom: 10px;
+}
+
+.kpi-value {
+  font-family: var(--font-mono);
+  font-size: 28px; font-weight: 700;
+  color: var(--text); line-height: 1;
+  display: flex; align-items: baseline; gap: 4px;
+}
+
+.kpi-value .unit { font-size: 14px; font-weight: 400; color: var(--text-2); }
+
+.kpi-delta {
+  display: flex; align-items: center; gap: 4px;
+  margin-top: 8px; font-size: 11px; font-weight: 600;
+}
+.delta-pos { color: var(--green); }
+.delta-neg { color: var(--red); }
+.delta-neu { color: var(--text-3); }
+
+.kpi-sparkline {
+  position: absolute; bottom: 0; right: 0;
+  width: 80px; height: 40px; opacity: 0.4;
+}
+
+.kpi-footnote {
+  font-size: 9px; color: var(--text-3); margin-top: 6px;
+  font-family: var(--font-mono);
+  cursor: help; border-bottom: 1px dashed var(--border-2);
+  display: inline-block;
+}
+
+/* ─── MIDDLE ROW ─── */
+.mid-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  animation: fade-up 0.5s 0.1s var(--ease-out) both;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+}
+.card-title {
+  font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: var(--text-2); flex: 1;
+}
+.card-body { padding: 20px; }
+
+/* Velocity bars */
+.velocity-item { margin-bottom: 16px; }
+.velocity-item:last-child { margin-bottom: 0; }
+.velocity-meta {
+  display: flex; justify-content: space-between;
+  font-size: 11px; color: var(--text-3);
+  margin-bottom: 6px;
+}
+.velocity-meta strong { color: var(--text-2); }
+
+.bar-track {
+  height: 6px; border-radius: 99px;
+  background: var(--surface-2);
+  overflow: hidden; position: relative;
+}
+.bar-fill {
+  height: 100%; border-radius: 99px;
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 1.2s var(--ease-out);
+}
+.bar-fill.animate { transform: scaleX(1); }
+
+.velocity-result {
+  margin-top: 16px;
+  border: 1px solid rgba(0,229,229,0.2);
+  border-radius: var(--radius-sm);
+  background: var(--cyan-dim);
+  padding: 12px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.velocity-pct {
+  font-family: var(--font-mono);
+  font-size: 20px; font-weight: 700; color: var(--cyan);
+}
+.velocity-desc { font-size: 11px; color: var(--text-2); }
+
+/* Self-healing card */
+.heal-value {
+  font-family: var(--font-mono);
+  font-size: 42px; font-weight: 700;
+  color: var(--cyan); line-height: 1;
+}
+.heal-sub { font-size: 11px; color: var(--text-3); margin-top: 4px; }
+
+.heal-desc {
+  font-size: 12px; color: var(--text-2); line-height: 1.7;
+  margin-top: 12px; padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+/* ─── BOTTOM ROW: Velocity Chart + Roadmap ─── */
+.bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 14px;
+  animation: fade-up 0.5s 0.15s var(--ease-out) both;
+}
+
+/* ─── HUB GRID: RAG + Roadmap Estratégico ─── */
+.hub-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  animation: fade-up 0.5s 0.2s var(--ease-out) both;
+}
+
+.hub-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+.hub-card-accent {
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+.hub-card-title {
+  margin: 0 0 6px;
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px;
+}
+.hub-card-desc {
+  font-size: 12px; color: var(--text-2);
+  margin-bottom: 18px; line-height: 1.6;
+}
+
+/* Drop zone */
+.drop-zone {
+  border: 1px dashed var(--border-2);
+  border-radius: var(--radius-sm);
+  padding: 28px 16px; text-align: center;
+  background: var(--bg-3); cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+/* FIX BUG-HTML-4: adicionado .drop-zone.hover — o JS adiciona classe 'hover',
+   não pseudo-classe. Ambos mantidos para cobrir hover real e drag. */
+.drop-zone:hover, .drop-zone.hover { border-color: var(--blue); background: var(--blue-dim); }
+.drop-zone-icon { font-size: 26px; margin-bottom: 10px; }
+.drop-zone-label { font-size: 13px; font-weight: 600; color: var(--text); }
+.drop-zone-sub { font-size: 11px; color: var(--text-3); margin-top: 5px; }
+
+.rag-footer {
+  margin-top: 16px;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 11px; font-weight: 600;
+}
+.rag-status {
+  color: var(--green);
+  display: flex; align-items: center; gap: 6px;
+}
+.rag-status-dot {
+  width: 6px; height: 6px;
+  background: var(--green); border-radius: 50%;
+  box-shadow: 0 0 6px var(--green);
+}
+.rag-count {
+  color: var(--text-3);
+  background: var(--surface-2);
+  padding: 3px 10px; border-radius: 99px;
+}
+
+/* Roadmap phases */
+.phase-list { display: flex; flex-direction: column; gap: 18px; }
+.phase-item { display: flex; gap: 12px; align-items: flex-start; }
+.phase-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+.phase-name {
+  font-size: 13px; font-weight: 600;
+}
+.phase-desc { font-size: 11px; color: var(--text-3); margin-top: 3px; }
+
+@media (max-width: 1024px) {
+  .hub-grid { grid-template-columns: 1fr; }
+}
+
+/* Chart card */
+.chart-area {
+  position: relative; height: 180px; padding: 16px 20px;
+}
+#velocity-chart { width: 100%; height: 100%; }
+
+/* Roadmap card */
+.roadmap-item {
+  display: flex; gap: 12px; padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.roadmap-item:last-child { border-bottom: none; }
+
+.roadmap-timeline {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 0; padding-top: 3px;
+}
+.roadmap-node {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
+.roadmap-line {
+  width: 1px; flex: 1; min-height: 20px;
+  background: var(--border);
+  margin-top: 3px;
+}
+.roadmap-item:last-child .roadmap-line { display: none; }
+
+.roadmap-content { flex: 1; min-width: 0; }
+.roadmap-feat {
+  font-size: 12px; font-weight: 600; color: var(--text);
+  display: flex; align-items: center; gap: 6px;
+}
+.roadmap-eta { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+.roadmap-progress {
+  margin-top: 6px;
+  height: 3px; background: var(--surface-2); border-radius: 99px;
+  overflow: hidden;
+}
+.roadmap-progress-fill {
+  height: 100%; border-radius: 99px;
+  transform-origin: left; transform: scaleX(0);
+  transition: transform 1.4s var(--ease-out);
+}
+.roadmap-progress-fill.animate { transform: scaleX(1); }
+
+/* ═══════════════════════════════════════════
+   STUDIO PAGE
+═══════════════════════════════════════════ */
+#page-studio {
+  flex-direction: row;
+  overflow: hidden;
+}
+
+/* Studio sidebar (file list) */
+#studio-sidebar {
+  width: 260px; flex-shrink: 0;
+  background: var(--bg-2);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+.studio-sidebar-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.btn-record {
+  width: 100%;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px;
+  background: var(--red-dim);
+  border: 1px solid rgba(239,68,68,0.3);
+  border-radius: var(--radius-sm);
+  color: var(--red);
+  font-family: var(--font-ui); font-size: 12px; font-weight: 700;
+  cursor: pointer; letter-spacing: 0.5px;
+  transition: all 0.2s;
+}
+.btn-record:hover { background: rgba(239,68,68,0.2); box-shadow: 0 0 20px rgba(239,68,68,0.15); }
+
+.btn-ai {
+  width: 100%;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 9px 10px; margin-top: 8px;
+  background: var(--cyan-dim);
+  border: 1px solid rgba(0,229,229,0.25);
+  border-radius: var(--radius-sm);
+  color: var(--cyan);
+  font-family: var(--font-ui); font-size: 12px; font-weight: 700;
+  cursor: pointer; letter-spacing: 0.4px;
+  transition: all 0.2s;
+}
+.btn-ai:hover { background: rgba(0,229,229,0.15); box-shadow: 0 0 20px rgba(0,229,229,0.12); }
+
+.btn-rebuild {
+  width: 100%;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 7px 10px; margin-top: 6px;
+  background: transparent;
+  border: 1px dashed var(--border-2);
+  border-radius: var(--radius-sm);
+  color: var(--text-3);
+  font-family: var(--font-ui); font-size: 11px; font-weight: 600;
+  cursor: pointer; letter-spacing: 0.3px;
+  transition: all 0.2s;
+}
+.btn-rebuild:hover  { border-color: var(--violet); color: var(--violet); background: var(--violet-dim); border-style: solid; }
+.btn-rebuild:disabled { opacity: 0.5; cursor: not-allowed; }
+@keyframes spin-icon { to { transform: rotate(360deg); } }
+.btn-rebuild.loading span:first-child { display: inline-block; animation: spin-icon 0.9s linear infinite; }
+
+/* AI modal progress bar */
+.ai-progress-bar {
+  height: 3px; background: var(--surface-3); border-radius: 99px; overflow: hidden;
+  margin-top: 4px;
+}
+.ai-progress-fill {
+  height: 100%; background: linear-gradient(90deg, var(--cyan), var(--violet));
+  border-radius: 99px;
+  animation: indeterminate 1.8s ease infinite;
+  transform-origin: left;
+}
+.ai-status-box {
+  margin-top: 12px; padding: 12px 14px;
+  background: var(--bg-3); border: 1px solid var(--border-2);
+  border-radius: var(--radius-xs);
+  font-size: 12px; color: var(--text-2);
+  display: none; gap: 10px; align-items: flex-start;
+  line-height: 1.6;
+}
+.ai-status-box.visible { display: flex; }
+.ai-status-icon { flex-shrink: 0; font-size: 15px; margin-top: 1px; }
+.ai-status-text { flex: 1; }
+.ai-status-label {
+  font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--text-3); margin-bottom: 3px;
+}
+.ai-status-box.success { border-color: rgba(16,185,129,0.3); background: var(--green-dim); }
+.ai-status-box.success .ai-status-icon { color: var(--green); }
+.ai-status-box.success .ai-status-text { color: var(--text); }
+.ai-status-box.error   { border-color: rgba(239,68,68,0.3); background: var(--red-dim); }
+.ai-status-box.error   .ai-status-icon { color: var(--red); }
+.ai-status-box.error   .ai-status-text { color: var(--text); }
+.ai-status-box.loading { border-color: rgba(0,229,229,0.2); }
+.ai-status-box.loading .ai-status-icon { color: var(--cyan); }
+
+/* Sparkle icon animation */
+@keyframes sparkle { 0%,100%{transform:scale(1) rotate(0deg)} 50%{transform:scale(1.2) rotate(15deg)} }
+.btn-ai:hover .btn-ai-icon { animation: sparkle 0.6s ease; }
+
+.rec-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--red);
+  animation: rec-pulse 1.5s ease infinite;
+}
+@keyframes rec-pulse {
+  0%,100%{transform:scale(1); opacity:1}
+  50%{transform:scale(1.4); opacity:0.7}
+}
+
+.studio-list-label {
+  padding: 12px 16px 8px;
+  font-size: 9px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: var(--text-3);
+}
+
+/* Input de busca de treinamentos */
+.search-box-container {
+  padding: 0 12px 8px 12px;
+}
+.search-box {
+  width: 100%;
+  background: var(--bg-3);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-xs);
+  color: var(--text);
+  font-size: 11px;
+  padding: 8px 12px 8px 30px;
+  outline: none;
+  transition: border-color 0.15s;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 10px center;
+}
+.search-box:focus { border-color: var(--cyan); }
+
+#lista-roteiros { flex: 1; overflow-y: auto; padding: 0 8px 8px; }
+
+.roteiro-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  cursor: pointer; transition: all 0.15s;
+  border: 1px solid transparent;
+  margin-bottom: 2px;
+}
+.roteiro-item:hover { background: var(--surface); }
+.roteiro-item.selected {
+  background: var(--surface);
+  border-color: var(--border-2);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.roteiro-item.selected .roteiro-name { color: var(--cyan); }
+
+.roteiro-icon {
+  width: 30px; height: 30px; border-radius: var(--radius-xs);
+  background: var(--surface-2);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 12px;
+}
+.roteiro-info { flex: 1; min-width: 0; }
+.roteiro-name { font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.roteiro-meta { font-size: 10px; color: var(--text-3); display: flex; gap: 4px; margin-top: 2px; align-items: center; flex-wrap: wrap; }
+
+.media-badge {
+  font-size: 8px; font-weight: 700; padding: 1px 5px;
+  border-radius: 3px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.mb-video  { background: var(--blue-dim); color: var(--blue); }
+.mb-scorm  { background: var(--violet-dim); color: var(--violet); }
+.mb-pdf    { background: var(--green-dim); color: var(--green); }
+
+/* Studio main editor area */
+#studio-main {
+  flex: 1; display: flex; flex-direction: column; overflow: hidden;
+}
+
+/* Editor topbar */
+#editor-topbar {
+  height: 56px; flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-2);
+  display: flex; align-items: center;
+  padding: 0 20px; gap: 12px;
+}
+
+.title-area {
+  flex: 1; display: flex; align-items: center; min-width: 0; gap: 8px;
+}
+
+#editor-title {
+  font-size: 13px; font-weight: 600; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.title-actions {
+  display: none; align-items: center; gap: 2px;
+}
+.title-actions .btn-icon {
+  padding: 5px 6px; border: none; background: transparent; box-shadow: none; font-size: 14px;
+}
+
+/* Pipeline buttons */
+.pipeline-group {
+  display: flex; align-items: center; gap: 6px;
+}
+.pipeline-sep {
+  width: 1px; height: 24px;
+  background: var(--border-2); margin: 0 4px;
+}
+
+.pipe-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: var(--radius-xs);
+  border: 1px solid var(--border-2);
+  background: var(--surface);
+  font-family: var(--font-ui); font-size: 11px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+  position: relative; letter-spacing: 0.3px;
+  color: var(--text-2);
+}
+.pipe-btn:hover { border-color: var(--border-2); color: var(--text); background: var(--surface-2); }
+
+.pipe-btn.robo  { --clr: var(--blue); }
+.pipe-btn.video { --clr: var(--cyan); }
+.pipe-btn.scorm { --clr: var(--violet); }
+.pipe-btn.pdf   { --clr: var(--green); }
+.pipe-btn.hitl  { --c: var(--amber); }
+.pipe-btn.coach { --clr: var(--amber); }
+
+.pipe-btn.pulse {
+  border-color: var(--clr);
+  color: var(--clr);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--clr) 40%, transparent);
+  animation: pipe-pulse 2s ease infinite;
+}
+@keyframes pipe-pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--clr) 50%, transparent); }
+  70% { box-shadow: 0 0 0 8px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+.pipe-btn .notif {
+  position: absolute; top: -5px; right: -5px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--red);
+  border: 1.5px solid var(--bg-2);
+  display: none;
+}
+.pipe-btn.pulse .notif { display: block; }
+
+.btn-icon {
+  padding: 7px 10px; border-radius: var(--radius-xs);
+  border: 1px solid var(--border-2);
+  background: var(--surface);
+  color: var(--text-2); cursor: pointer;
+  font-size: 13px; transition: all 0.2s;
+}
+.btn-icon:hover { color: var(--text); border-color: var(--border-2); background: var(--surface-2); }
+.btn-icon.danger:hover { color: var(--red); border-color: rgba(239,68,68,0.3); background: var(--red-dim); }
+.btn-icon.success:hover { color: var(--green); border-color: rgba(16,185,129,0.3); background: var(--green-dim); }
+
+.btn-consume {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: var(--radius-xs);
+  border: 1px solid var(--border-2);
+  font-family: var(--font-ui); font-size: 11px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s; text-decoration: none;
+  color: var(--text-2); background: var(--surface);
+  display: none;
+}
+.btn-consume:hover { color: var(--text); background: var(--surface-2); }
+.btn-consume.visible { display: flex; }
+
+/* Editor area */
+#editor-area {
+  flex: 1; overflow-y: auto; padding: 24px;
+  display: none;
+}
+#editor-area.visible { display: block; }
+
+#passos-container { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+
+/* Empty state */
+#empty-state {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 12px; color: var(--text-3);
+}
+#empty-state svg { opacity: 0.15; }
+#empty-state p { font-size: 13px; }
+
+/* Step card */
+.step-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+
+.step-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px;
+  background: var(--bg-3);
+  border-bottom: 1px solid var(--border);
+}
+
+.step-num {
+  width: 22px; height: 22px; border-radius: 6px;
+  background: var(--cyan-dim); border: 1px solid rgba(0,229,229,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 700; color: var(--cyan);
+}
+
+.step-title { font-size: 12px; font-weight: 700; color: var(--text-2); flex: 1; letter-spacing: 0.3px; }
+
+.step-type-badge {
+  font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;
+  padding: 2px 7px; border-radius: 4px;
+}
+
+.step-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+
+.field-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-3); margin-bottom: 5px; }
+
+.field-textarea, .field-input, .field-select {
+  width: 100%;
+  background: var(--bg-3); border: 1px solid var(--border-2);
+  border-radius: var(--radius-xs);
+  color: var(--text); font-family: var(--font-ui); font-size: 12px;
+  padding: 9px 12px; outline: none; resize: none;
+  transition: border-color 0.15s;
+  line-height: 1.6;
+}
+.field-textarea:focus, .field-input:focus, .field-select:focus {
+  border-color: var(--cyan); box-shadow: 0 0 0 2px var(--cyan-dim);
+}
+.field-select option { background: var(--surface); }
+
+.action-list { display: flex; flex-direction: column; gap: 8px; }
+
+/* Action card inside step */
+.action-card {
+  background: var(--bg-3); border: 1px solid var(--border);
+  border-radius: var(--radius-xs); padding: 12px;
+  display: flex; gap: 10px; align-items: flex-start;
+  transition: border-color 0.15s;
+  cursor: default;
+}
+.action-card.drag-over { border-color: var(--cyan); background: var(--cyan-dim); }
+.action-card:hover { border-color: var(--border-2); }
+
+.drag-handle {
+  padding-top: 2px; cursor: grab; color: var(--text-3);
+  transition: color 0.15s; flex-shrink: 0;
+}
+.drag-handle:hover { color: var(--cyan); }
+.drag-handle:active { cursor: grabbing; }
+
+.action-body { flex: 1; min-width: 0; }
+
+.action-row { display: flex; gap: 8px; margin-bottom: 8px; }
+
+.action-controls {
+  display: flex; gap: 3px; margin-left: auto;
+  opacity: 0; transition: opacity 0.15s;
+}
+.action-card:hover .action-controls { opacity: 1; }
+
+.act-btn {
+  width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
+  background: var(--surface); border: 1px solid var(--border-2);
+  border-radius: 5px; cursor: pointer; color: var(--text-3);
+  font-size: 10px; transition: all 0.15s;
+}
+.act-btn:hover { color: var(--text); border-color: var(--border-2); background: var(--surface-2); }
+.act-btn.del:hover { color: var(--red); border-color: rgba(239,68,68,0.3); background: var(--red-dim); }
+
+.btn-add-action {
+  width: 100%; padding: 8px; margin-top: 8px;
+  background: transparent; border: 1px dashed var(--border-2);
+  border-radius: var(--radius-xs); color: var(--text-3);
+  font-family: var(--font-ui); font-size: 11px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+}
+.btn-add-action:hover {
+  border-color: var(--cyan); color: var(--cyan); background: var(--cyan-dim);
+}
+
+/* ═══════════════════════════════════════════
+   MODALS
+═══════════════════════════════════════════ */
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(6,10,20,0.85);
+  backdrop-filter: blur(8px);
+  display: none; align-items: center; justify-content: center;
+  z-index: 200; padding: 20px;
+  animation: backdrop-in 0.2s ease both;
+}
+.modal-backdrop.open { display: flex; }
+@keyframes backdrop-in { from{opacity:0} to{opacity:1} }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius);
+  width: 100%; max-width: 480px;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+  animation: modal-in 0.3s var(--ease-spring) both;
+  overflow: hidden;
+}
+@keyframes modal-in {
+  from { opacity:0; transform: scale(0.95) translateY(8px); }
+  to   { opacity:1; transform: scale(1) translateY(0); }
+}
+
+.modal-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+}
+.modal-icon {
+  width: 36px; height: 36px; border-radius: var(--radius-xs);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+.modal-title { font-size: 15px; font-weight: 700; color: var(--text); }
+.modal-subtitle { font-size: 11px; color: var(--text-3); margin-top: 1px; }
+.modal-close {
+  margin-left: auto; width: 28px; height: 28px;
+  border-radius: 6px; border: 1px solid var(--border-2);
+  background: transparent; color: var(--text-3);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 14px;
+  transition: all 0.15s;
+}
+.modal-close:hover { color: var(--text); background: var(--surface-2); }
+
+.modal-body { padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+.modal-field label { display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-3); margin-bottom: 6px; }
+.modal-field input, .modal-field textarea {
+  width: 100%; background: var(--bg-3);
+  border: 1px solid var(--border-2); border-radius: var(--radius-xs);
+  color: var(--text); font-family: var(--font-ui); font-size: 13px;
+  padding: 10px 14px; outline: none; resize: none; line-height: 1.5;
+  transition: border-color 0.15s;
+}
+.modal-field input:focus, .modal-field textarea:focus {
+  border-color: var(--cyan); box-shadow: 0 0 0 3px var(--cyan-dim);
+}
+
+.modal-footer {
+  padding: 14px 24px;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: flex-end; gap: 8px;
+  background: var(--bg-3);
+}
+
+/* Confirm modal */
+.confirm-modal { max-width: 360px; }
+.confirm-message { font-size: 13px; color: var(--text-2); line-height: 1.6; padding: 20px 24px; }
+
+/* Buttons */
+.btn {
+  padding: 9px 20px; border-radius: var(--radius-xs);
+  font-family: var(--font-ui); font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s; border: none;
+  letter-spacing: 0.3px;
+}
+.btn-ghost {
+  background: transparent; color: var(--text-2);
+  border: 1px solid var(--border-2);
+}
+.btn-ghost:hover { color: var(--text); background: var(--surface-2); }
+
+.btn-cyan {
+  background: var(--cyan); color: #060a14;
+  box-shadow: 0 0 20px var(--cyan-glow);
+}
+.btn-cyan:hover { box-shadow: 0 0 30px var(--cyan-glow); transform: translateY(-1px); }
+
+.btn-red { background: var(--red-dim); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+.btn-red:hover { background: rgba(239,68,68,0.2); }
+
+/* ═══════════════════════════════════════════
+   LOADING OVERLAY
+═══════════════════════════════════════════ */
+#loading-overlay {
+  position: fixed; inset: 0; z-index: 300;
+  background: rgba(6,10,20,0.92);
+  backdrop-filter: blur(12px);
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center; gap: 0;
+}
+#loading-overlay.visible { display: flex; }
+
+.loader-ring {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  border: 2px solid var(--border-2);
+  border-top-color: var(--cyan);
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 20px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loader-title { font-size: 16px; font-weight: 700; color: #ffffff; margin-bottom: 4px; }
+.loader-msg { font-size: 12px; color: #cbd5e1; margin-bottom: 24px; text-align: center; max-width: 280px; }
+
+.loader-progress {
+  width: 200px; height: 2px;
+  background: var(--surface-2); border-radius: 99px; overflow: hidden;
+  margin-bottom: 20px;
+}
+.loader-progress-fill {
+  height: 100%; background: var(--cyan);
+  border-radius: 99px;
+  animation: indeterminate 1.5s ease infinite;
+  transform-origin: left;
+}
+@keyframes indeterminate {
+  0% { transform: scaleX(0) translateX(0); }
+  50% { transform: scaleX(0.6) translateX(80px); }
+  100% { transform: scaleX(0) translateX(400px); }
+}
+
+/* ═══════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════ */
+#toast-container {
+  position: fixed; bottom: 24px; right: 24px;
+  z-index: 400; display: flex; flex-direction: column; gap: 8px;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 18px; border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+  min-width: 260px; max-width: 380px;
+  transform: translateX(120%); opacity: 0;
+  transition: transform 0.35s var(--ease-spring), opacity 0.35s ease;
+  pointer-events: auto;
+  font-size: 12px; color: var(--text-2);
+}
+.toast.show { transform: translateX(0); opacity: 1; }
+.toast.hide { transform: translateX(120%); opacity: 0; }
+
+.toast-icon { font-size: 16px; flex-shrink: 0; }
+.toast-msg { flex: 1; font-weight: 500; }
+.toast.success .toast-icon { color: var(--green); }
+.toast.error   .toast-icon { color: var(--red); }
+.toast.info    .toast-icon { color: var(--cyan); }
+.toast.success { border-color: rgba(16,185,129,0.2); }
+.toast.error   { border-color: rgba(239,68,68,0.2); }
+.toast.info    { border-color: rgba(0,229,229,0.2); }
+
+/* ═══════════════════════════════════════════
+   VIDEO MODAL
+═══════════════════════════════════════════ */
+#modal-video {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(0,0,0,0.97);
+  backdrop-filter: blur(20px);
+  display: none; align-items: center; justify-content: center;
+  padding: 20px;
+}
+#modal-video.open { display: flex; }
+.video-close {
+  position: absolute; top: 20px; right: 24px;
+  background: var(--surface); border: 1px solid var(--border-2);
+  color: var(--text-2); padding: 8px 16px; border-radius: 99px;
+  cursor: pointer; font-size: 12px; font-weight: 600;
+  transition: all 0.2s;
+}
+.video-close:hover { color: var(--text); background: var(--surface-2); }
+#video-player { max-width: 1200px; width: 100%; border-radius: var(--radius); }
+
+/* ═══════════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════════ */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Tooltip */
+[data-tip] { position: relative; }
+[data-tip]:hover::after {
+  content: attr(data-tip);
+  position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+  background: var(--surface-3); color: var(--text-2);
+  font-size: 10px; padding: 5px 10px; border-radius: 5px;
+  white-space: nowrap; pointer-events: none; z-index: 1000;
+  border: 1px solid var(--border-2);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+
+/* 🎯 CORREÇÃO: Tooltips no cabeçalho abrem para BAIXO para não cortar */
+#editor-topbar [data-tip]:hover::after,
+.overview-header [data-tip]:hover::after {
+  bottom: auto;
+  top: calc(100% + 8px);
+}
+
+/* ═══════════════════════════════════════════
+   THEME TOGGLE PILL
+═══════════════════════════════════════════ */
+.theme-toggle {
+  display: flex; align-items: center;
+  gap: 0; padding: 3px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  border-radius: 99px;
+  cursor: pointer;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.theme-opt {
+  width: 26px; height: 26px;
+  border-radius: 99px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  color: var(--text-3);
+  transition: background 0.2s, color 0.2s !important;
+  user-select: none;
+}
+
+.theme-opt.active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+
+/* Light mode active state gives colored shadow */
+html.light .theme-opt.active {
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,122,122,0.15);
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 1024px) {
+  #shell { grid-template-columns: 1fr; }
+  #sidebar { display: none; }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .mid-grid, .bottom-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div id="loading-overlay">
+  <div class="loader-ring"></div>
+  
+  <div class="loader-title" style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
+    <span id="loader-title-txt">Processando...</span>
+    <span id="loader-pct" style="color: var(--cyan); font-family: var(--font-mono); font-size: 28px; min-height: 28px;"></span>
+  </div>
+  
+  <div class="loader-msg" id="loading-msg">Aguarde enquanto o robô trabalha nos bastidores. 🎬</div>
+  <div class="loader-progress"><div class="loader-progress-fill"></div></div>
+  
+  <button class="btn btn-ghost" onclick="cancelarProcesso()" style="pointer-events:auto">
+    ✕ &nbsp;Interromper
+  </button>
+</div>
+
+<div id="shell">
+
+  <aside id="sidebar">
+
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M13 3L4 14h8l-1 7 9-11h-8l1-7z" fill="#060a14" stroke="#060a14" stroke-width="0.5"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <div class="logo-title">Training OS</div>
+        <div class="logo-sub">Knowledge Platform</div>
+      </div>
+      <div class="live-pill" id="live-indicator">
+        <div class="live-dot"></div>
+        <span class="live-text">Live</span>
+      </div>
+    </div>
+
+    <div style="flex:1; overflow-y:auto; overflow-x:hidden;">
+
+      <div class="nav-section">
+        <div class="nav-section-label">Plataforma</div>
+        <a href="/" class="nav-btn" style="text-decoration: none; color: var(--cyan); font-weight: 600;">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="opacity: 1;">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            <circle cx="12" cy="8" r="2.5" fill="currentColor" stroke="none" style="animation: live-pulse 2s infinite;"></circle>
+          </svg>
+          Nova Home (VLA)
+        </a>
+        <button class="nav-btn active" id="nav-overview" onclick="showTab('overview')">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
+            <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
+          </svg>
+          Overview Executivo
+        </button>
+        <button class="nav-btn" id="nav-studio" onclick="showTab('studio')">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>
+          </svg>
+          Production Studio
+        </button>
+      </div>
+
+      <div class="nav-section" style="margin-top:8px">
+        <div class="nav-section-label">Roadmap Estratégico</div>
+
+        <div class="nav-roadmap-item">
+          <div style="display:flex;align-items:center;gap:10px">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+            <span>Knowledge Graph</span>
+          </div>
+          <span class="roadmap-badge badge-wip">Dev</span>
+        </div>
+
+        <div class="nav-roadmap-item">
+          <div style="display:flex;align-items:center;gap:10px">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span>AI Coach (DAP)</span>
+          </div>
+          <span class="roadmap-badge badge-soon">Q3</span>
+        </div>
+
+        <div class="nav-roadmap-item">
+          <div style="display:flex;align-items:center;gap:10px">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span>Auto Documentação</span>
+          </div>
+          <span class="roadmap-badge badge-planned">2026</span>
+        </div>
+
+        <div class="nav-roadmap-item">
+          <div style="display:flex;align-items:center;gap:10px">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <span>LMS Analytics</span>
+          </div>
+          <span class="roadmap-badge badge-beta">Beta</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-avatar">A</div>
+      <div class="user-info">
+        <div class="user-name">Admin</div>
+        <div class="user-version">v2.7.0 · build 420</div>
+      </div>
+      <div class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" data-tip="Alternar tema">
+        <div class="theme-opt" id="theme-opt-dark" title="Dark">🌙</div>
+        <div class="theme-opt" id="theme-opt-light" title="Light">☀️</div>
+      </div>
+    </div>
+  </aside>
+
+  <div id="main">
+
+    <div class="tab-page active" id="page-overview">
+
+      <div class="overview-header">
+        <div>
+          <h1 class="overview-title">Olá, Renan 👋<br>Bem-vindo de volta ao <em>Training OS</em>.</h1>
+          <p class="overview-sub">
+            Aqui está o resumo da produtividade da sua esteira hoje
+            <span class="date-chip" id="current-date">—</span>
+          </p>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:4px">
+          <div style="display:flex;align-items:center;gap:6px;padding:7px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);font-size:11px;color:var(--text-3)">
+            <span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;box-shadow:0 0 6px var(--green)"></span>
+            Sistema operacional
+          </div>
+          <button class="btn-icon" id="btn-export-kpis" onclick="exportarKPIs()" data-tip="Exportar relatório CSV">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="kpi-grid">
+
+        <div class="kpi-card">
+          <div class="kpi-accent" style="background:var(--cyan)"></div>
+          <div class="kpi-label">Treinamentos</div>
+          <div class="kpi-value"><span id="metric-aulas">0</span></div>
+          <div class="kpi-delta" id="delta-aulas"><span class="delta-neu">—</span></div>
+          <canvas class="kpi-sparkline" id="spark-aulas"></canvas>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-accent" style="background:var(--blue)"></div>
+          <div class="kpi-label">Memória IA</div>
+          <div class="kpi-value"><span id="metric-memoria">0</span></div>
+          <div class="kpi-delta" id="delta-memoria"><span class="delta-neu">—</span></div>
+          <canvas class="kpi-sparkline" id="spark-memoria"></canvas>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-accent" style="background:var(--violet)"></div>
+          <div class="kpi-label">Horas Poupadas</div>
+          <div class="kpi-value"><span id="metric-horas">0</span><span class="unit">h</span></div>
+          <div class="kpi-delta" id="delta-horas"><span class="delta-neu">—</span></div>
+          <canvas class="kpi-sparkline" id="spark-horas"></canvas>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-accent" style="background:var(--green)"></div>
+          <div class="kpi-label">Economia Estimada</div>
+          <div class="kpi-value" style="font-size:22px"><span id="metric-dinheiro">R$ 0</span></div>
+          <div class="kpi-delta" id="delta-dinheiro"><span class="delta-neu">—</span></div>
+          <span class="kpi-footnote" data-tip="Fórmula: N_aulas × 6h × R$ 150/h (HH Consultor Senior)">
+            6h × R$150 × N aulas
+          </span>
+          <canvas class="kpi-sparkline" id="spark-dinheiro"></canvas>
+        </div>
+      </div>
+
+      <div class="mid-grid">
+
+        <div class="card">
+          <div class="card-header">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-3)"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            <span class="card-title">Velocidade de Produção</span>
+          </div>
+          <div class="card-body">
+            <div class="velocity-item">
+              <div class="velocity-meta"><span>Método Manual</span><strong>6h / aula</strong></div>
+              <div class="bar-track"><div class="bar-fill" id="bar-manual" style="width:100%;background:var(--surface-3)"></div></div>
+            </div>
+            <div class="velocity-item">
+              <div class="velocity-meta"><span style="color:var(--cyan)">Training OS</span><strong style="color:var(--cyan)">15min / aula</strong></div>
+              <div class="bar-track">
+                <div class="bar-fill" id="bar-os" style="width:4.17%;background:linear-gradient(90deg,var(--cyan),var(--cyan-2));box-shadow:0 0 12px var(--cyan-glow)"></div>
+              </div>
+            </div>
+            <div class="velocity-result">
+              <div>
+                <div class="velocity-pct">↓ 96%</div>
+                <div class="velocity-desc" style="font-size:10px;color:var(--text-3)">redução de tempo por aula</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-3)">24× mais rápido</div>
+                <div style="font-size:10px;color:var(--text-3);margin-top:2px">vs produção tradicional</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-3)"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span class="card-title">Motor Zero-Touch</span>
+            <span style="font-size:9px;color:var(--green);font-weight:700;background:var(--green-dim);border:1px solid rgba(16,185,129,0.2);padding:2px 7px;border-radius:4px">AUTO-CURA</span>
+          </div>
+          <div class="card-body" style="display:flex;flex-direction:column;justify-content:space-between;height:calc(100% - 50px)">
+            <div>
+              <div class="heal-value" id="metric-hits">0</div>
+              <div class="heal-sub">recuperações automáticas de falha</div>
+            </div>
+            <div class="heal-desc">
+              A IA memoriza elementos visualmente via SQLite. Quando o Senior X sofre atualizações,
+              o robô detecta a mudança de UI e repara o script <em>sem intervenção humana</em> — localizando os novos botões pela descrição visual.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-grid">
+
+        <div class="card">
+          <div class="card-header">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-3)"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <span class="card-title">Tendência de Produção</span>
+            <span style="margin-left:auto;font-family:var(--font-mono);font-size:9px;color:var(--text-3)">Últimas 8 semanas</span>
+          </div>
+          <div class="chart-area">
+            <canvas id="trend-chart"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-3)"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            <span class="card-title">Pipeline de Features</span>
+          </div>
+          <div class="card-body" style="padding:12px 20px">
+
+            <div class="roadmap-item">
+              <div class="roadmap-timeline">
+                <div class="roadmap-node" style="background:var(--violet);box-shadow:0 0 6px var(--violet)"></div>
+                <div class="roadmap-line"></div>
+              </div>
+              <div class="roadmap-content">
+                <div class="roadmap-feat">
+                  Knowledge Graph
+                  <span class="roadmap-badge badge-wip">Em Dev</span>
+                </div>
+                <div class="roadmap-eta">Grafo semântico de habilidades por módulo</div>
+                <div class="roadmap-progress">
+                  <div class="roadmap-progress-fill" style="width:60%;background:var(--violet)" data-pct="0.6"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="roadmap-item">
+              <div class="roadmap-timeline">
+                <div class="roadmap-node" style="background:var(--amber)"></div>
+                <div class="roadmap-line"></div>
+              </div>
+              <div class="roadmap-content">
+                <div class="roadmap-feat">
+                  AI Coach DAP
+                  <span class="roadmap-badge badge-soon">Q3 2025</span>
+                </div>
+                <div class="roadmap-eta">Assistente contextual em sobreposição na tela</div>
+                <div class="roadmap-progress">
+                  <div class="roadmap-progress-fill" style="width:25%;background:var(--amber)" data-pct="0.25"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="roadmap-item">
+              <div class="roadmap-timeline">
+                <div class="roadmap-node" style="background:var(--cyan)"></div>
+                <div class="roadmap-line"></div>
+              </div>
+              <div class="roadmap-content">
+                <div class="roadmap-feat">
+                  LMS Analytics
+                  <span class="roadmap-badge badge-beta">Beta</span>
+                </div>
+                <div class="roadmap-eta">Dashboard de engajamento e completion rates</div>
+                <div class="roadmap-progress">
+                  <div class="roadmap-progress-fill" style="width:80%;background:var(--cyan)" data-pct="0.80"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="roadmap-item">
+              <div class="roadmap-timeline">
+                <div class="roadmap-node" style="background:var(--text-3)"></div>
+              </div>
+              <div class="roadmap-content">
+                <div class="roadmap-feat">
+                  Auto Documentação
+                  <span class="roadmap-badge badge-planned">2026</span>
+                </div>
+                <div class="roadmap-eta">Geração automática de manuais em PDF/Confluence</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ✦ Base de Conhecimento (RAG) + Roadmap Estratégico ✦ -->
+      <div class="hub-grid">
+
+        <!-- Card: RAG / Knowledge Base -->
+        <div class="hub-card" style="border: 1px solid rgba(59,130,246,0.3);">
+          <div class="hub-card-accent" style="background: var(--blue);"></div>
+          <h3 class="hub-card-title" style="color: var(--blue);">
+            📚 Base de Conhecimento (RAG)
+          </h3>
+          <p class="hub-card-desc">
+            Faça upload de Manuais PDF ou Políticas. A Aura lerá os documentos e aprenderá os fluxos
+            automaticamente para gerar novas aulas Zero-Touch.
+          </p>
+
+          <div class="drop-zone" onclick="document.getElementById('rag-file-input').click()"
+               ondragover="event.preventDefault(); this.classList.add('hover')"
+               ondragleave="this.classList.remove('hover')"
+               ondrop="handleRagDrop(event)">
+            <div class="drop-zone-icon">☁️</div>
+            <div class="drop-zone-label">Arraste manuais em PDF aqui</div>
+            <div class="drop-zone-sub">Indexação direta no banco vetorial (Pinecone)</div>
+          </div>
+          <input type="file" id="rag-file-input" accept=".pdf" multiple style="display:none"
+                 onchange="uploadRagFiles(this.files)">
+
+          <div class="rag-footer">
+            <span class="rag-status">
+              <span class="rag-status-dot"></span>
+              Motor de IA: Online ⚡
+            </span>
+            <!-- FIX BUG-HTML-6: valor dinâmico — preenchido via carregarMetricas() -->
+          <span class="rag-count" id="rag-count">Carregando...</span>
+          </div>
+        </div>
+
+        <!-- Card: Roadmap Estratégico -->
+        <div class="hub-card" style="border: 1px solid rgba(139,92,246,0.3);">
+          <div class="hub-card-accent" style="background: var(--violet);"></div>
+          <h3 class="hub-card-title" style="color: var(--violet);">
+            🚀 Roadmap Estratégico
+          </h3>
+          <p class="hub-card-desc">
+            Evolução contínua da arquitetura do produto para as próximas fases.
+          </p>
+
+          <div class="phase-list">
+            <div class="phase-item">
+              <div class="phase-icon">✅</div>
+              <div>
+                <div class="phase-name" style="color: var(--text);">Fase 5: Automação Zero-Touch</div>
+                <div class="phase-desc">Geração de aulas 100% via IA usando Biblioteca de Peças de Lego.</div>
+              </div>
+            </div>
+            <div class="phase-item">
+              <div class="phase-icon">⏳</div>
+              <div>
+                <div class="phase-name" style="color: var(--amber);">Fase 6: Dry-Run Engine (Validador)</div>
+                <div class="phase-desc">Testes invisíveis massivos para garantir que atualizações do Senior X não quebrem roteiros antigos.</div>
+              </div>
+            </div>
+            <div class="phase-item">
+              <div class="phase-icon">🔒</div>
+              <div>
+                <div class="phase-name" style="color: var(--text-3);">Fase 7: Auto-Healing Visual</div>
+                <div class="phase-desc">Se um botão mudar de lugar, a IA re-mapeia as coordenadas em tempo real durante a gravação.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div><div class="tab-page" id="page-studio">
+
+      <div id="studio-sidebar">
+        <div class="studio-sidebar-header">
+          <button class="btn-record" onclick="abrirModalGravacao()">
+            <div class="rec-dot"></div>
+            Novo Mapeamento
+          </button>
+          <button class="btn-ai" onclick="abrirModalGerarIA()">
+            <span class="btn-ai-icon">✨</span>
+            Gerar com Aura IA
+          </button>
+          <button class="btn btn-primary" onclick="abrirModalFila()" style="margin-left: 8px;">
+            📚 Importar Cronograma (Texto Livre)
+          </button>
+          <button class="btn-rebuild" id="btn-rebuild-lib" onclick="reconstruirBiblioteca()" title="Reconstrói o dicionário de peças a partir de todos os roteiros salvos">
+            <span id="rebuild-icon">🧩</span>
+            <span id="rebuild-label">Atualizar Biblioteca</span>
+          </button>
+        </div>
+        <div class="studio-list-label" style="padding-bottom: 4px;">Treinamentos Salvos</div>
+        
+        <div class="search-box-container">
+          <input type="text" id="busca-treinamentos" class="search-box" oninput="filtrarRoteiros()" placeholder="Buscar treinamento...">
+        </div>
+
+        <div id="lista-roteiros"></div>
+      </div>
+
+      <div id="studio-main">
+
+        <div id="editor-topbar">
+          <div class="title-area">
+            <span id="editor-title" style="color:var(--text-3);font-style:italic">Selecione um treinamento</span>
+            
+            <div class="title-actions" id="editor-actions">
+              <button onclick="abrirModalRenomear()" class="btn-icon" title="Renomear Treinamento">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              </button>
+              <button onclick="duplicarTreinamento(arquivoAtual)" class="btn-icon" title="Duplicar Treinamento">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="pipeline-group" id="action-buttons" style="display:none">
+            <button class="btn-icon success" onclick="salvarRoteiro(true)" data-tip="Salvar (Ctrl+S)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            </button>
+            <button class="btn-icon danger" onclick="confirmarExcluir()" data-tip="Excluir treinamento">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            </button>
+            <div class="pipeline-sep"></div>
+
+            <button id="btn-gen-hitl" class="pipe-btn hitl" onclick="validarHitl()" data-tip="Validar com co-piloto humano">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c5.52 0 10-4.48 10-10S17.52 2 12 2 2 6.48 2 12s4.48 10 10 10z"/><path d="M12 8v4l3 3"/></svg>
+              <span class="lbl">HITL</span>
+              <div class="notif"></div>
+            </button>
+            <button id="btn-gen-robo" class="pipe-btn robo" onclick="executarRobo()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="15" x2="8" y2="15"/><line x1="12" y1="15" x2="12" y2="15"/><line x1="16" y1="15" x2="16" y2="15"/></svg>
+              <span class="lbl">1. Robô</span>
+              <div class="notif"></div>
+            </button>
+            <button id="btn-gen-video" class="pipe-btn video" onclick="renderizarVideo()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+              <span class="lbl">2. Vídeo</span>
+              <div class="notif"></div>
+            </button>
+            <button id="btn-gen-scorm" class="pipe-btn scorm" onclick="gerarScorm()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 2 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+              <span class="lbl">3. Simulador</span>
+              <div class="notif"></div>
+            </button>
+            <button id="btn-gen-pdf" class="pipe-btn pdf" onclick="gerarPDF()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              <span class="lbl">4. E-book</span>
+              <div class="notif"></div>
+            </button>
+            <button id="btn-gen-coach" class="pipe-btn coach" onclick="ingestarCoachIA()" data-tip="Alimentar Base da IA">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/><path d="M12 12 2.1 7.1"/></svg>
+              <span class="lbl">5. Coach IA</span>
+            </button>
+
+            <div class="pipeline-sep"></div>
+            <button id="btn-assistir" class="btn-consume" onclick="abrirVideo()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Assistir
+            </button>
+            <!-- FIX BUG-HTML-10: href="" em vez de "#" — evita navegação acidental antes de arquivo disponível -->
+            <a id="btn-baixar-scorm" class="btn-consume" href="" download>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              SCORM
+            </a>
+            <a id="btn-baixar-pdf" class="btn-consume" href="#" target="_blank" title="Visualizar E-book PDF">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+              Ver Playbook
+            </a>
+          </div>
+        </div>
+
+        <div id="empty-state">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/>
+          </svg>
+          <p>Nenhum treinamento selecionado</p>
+        </div>
+        <div id="editor-area">
+          <div id="passos-container"></div>
+        </div>
+      </div>
+    </div></div></div><div class="modal-backdrop" id="modal-gravacao">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-icon" style="background:var(--red-dim);color:var(--red)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>
+      </div>
+      <div>
+        <div class="modal-title">Novo Mapeamento</div>
+        <div class="modal-subtitle">O navegador abrirá em modo de captura</div>
+      </div>
+      <button class="modal-close" onclick="fecharModal('modal-gravacao')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-field">
+        <label>Nome do Treinamento</label>
+        <input type="text" id="input-nome-aula" placeholder="Ex: Criar Pasta no GED">
+      </div>
+      <div class="modal-field">
+        <label>Objetivo (Contexto para Aura IA)</label>
+        <textarea id="input-objetivo" rows="3" placeholder="Descreva o que o usuário aprenderá ao final deste treinamento..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="fecharModal('modal-gravacao')">Cancelar</button>
+      <button class="btn btn-red" onclick="iniciarGravacao()">
+        <span style="display:flex;align-items:center;gap:7px">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--red);display:inline-block"></span>
+          Iniciar Gravação
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-renomear">
+  <div class="modal confirm-modal">
+    <div class="modal-header">
+      <div class="modal-icon" style="background:var(--blue-dim);color:var(--blue)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+      </div>
+      <div>
+        <div class="modal-title">Renomear Treinamento</div>
+        <div class="modal-subtitle">Atualiza também os arquivos exportados</div>
+      </div>
+      <button class="modal-close" onclick="fecharModal('modal-renomear')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-field">
+        <label>Novo Nome</label>
+        <input type="text" id="input-novo-nome" placeholder="Digite o novo nome...">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="fecharModal('modal-renomear')">Cancelar</button>
+      <button class="btn btn-cyan" onclick="confirmarRenomear()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-confirmar">
+  <div class="modal confirm-modal">
+    <div class="modal-header">
+      <div class="modal-icon" style="background:var(--red-dim);color:var(--red)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+      </div>
+      <div>
+        <div class="modal-title">Excluir Treinamento</div>
+        <div class="modal-subtitle">Esta ação não pode ser desfeita</div>
+      </div>
+      <button class="modal-close" onclick="fecharModal('modal-confirmar')">✕</button>
+    </div>
+    <div class="confirm-message" id="confirm-message">Tem certeza que deseja excluir permanentemente este treinamento e todos os seus arquivos gerados?</div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="fecharModal('modal-confirmar')">Cancelar</button>
+      <button class="btn btn-red" id="confirm-action-btn">Confirmar Exclusão</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-video">
+  <button class="video-close" onclick="fecharVideo()">✕ &nbsp;Fechar</button>
+  <video id="video-player" controls></video>
+</div>
+
+<!-- ══════════ MODAL: GERAR AULA COM IA ══════════ -->
+<div class="modal-backdrop" id="modal-gerar-ia">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-header">
+      <div class="modal-icon" style="background:var(--cyan-dim);color:var(--cyan);font-size:18px">✨</div>
+      <div>
+        <div class="modal-title">Gerar Aula com Aura IA</div>
+        <div class="modal-subtitle">Descreva o objetivo — a IA monta o roteiro completo</div>
+      </div>
+      <button class="modal-close" onclick="fecharModalGerarIA()" aria-label="Fechar">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-field">
+        <label for="ai-nome-aula">Nome do Treinamento</label>
+        <input type="text" id="ai-nome-aula" placeholder="Ex: Criar Pasta Logística no GED" autocomplete="off">
+      </div>
+      <div class="modal-field">
+        <label for="ai-objetivo-aula">Objetivo do Treinamento</label>
+        <textarea id="ai-objetivo-aula" rows="3" placeholder="Descreva o que o usuário aprenderá. Ex: Criar uma pasta no GED chamada Logística e mover documentos para ela."></textarea>
+      </div>
+
+      <!-- Status box (hidden until running) -->
+      <div class="ai-status-box loading" id="ai-status-box">
+        <div class="ai-status-icon" id="ai-status-icon">⏳</div>
+        <div class="ai-status-text">
+          <div class="ai-status-label" id="ai-status-label">Processando</div>
+          <div id="ai-status-msg">Iniciando...</div>
+          <div class="ai-progress-bar" id="ai-progress-wrap" style="display:none">
+            <div class="ai-progress-fill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="fecharModalGerarIA()" id="btn-cancelar-ia">Cancelar</button>
+      <button class="btn btn-cyan" onclick="gerarRoteiroIA()" id="btn-gerar-ia"
+              style="display:flex;align-items:center;gap:8px">
+        <span>✨</span>
+        <span id="btn-gerar-ia-label">Gerar Roteiro</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════ MODAL: PRÓXIMO PASSO APÓS GERAÇÃO IA ═══════════ -->
+<div class="modal-backdrop" id="modal-proximo-passo">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header" style="background:linear-gradient(135deg,var(--surface),var(--surface-2))">
+      <div class="modal-icon" style="background:var(--amber-dim);color:var(--amber);font-size:20px">🏆</div>
+      <div>
+        <div class="modal-title" id="mpp-titulo">Roteiro gerado!</div>
+        <div class="modal-subtitle">Escolha o próximo passo</div>
+      </div>
+      <button class="modal-close" onclick="fecharModal('modal-proximo-passo')">✕</button>
+    </div>
+    <div class="modal-body" style="gap:12px">
+      <div style="background:var(--amber-dim);border:1px solid rgba(245,158,11,0.3);border-radius:var(--radius-xs);padding:12px 14px;font-size:12px;color:var(--amber);line-height:1.5">
+        ⚠️ Este roteiro foi gerado por IA e <strong>ainda não foi testado no sistema real</strong>.
+        A validação HITL garante que os cliques estão corretos antes de gravar o vídeo.
+      </div>
+      <div onclick="_mppExecutarHitl()"
+           style="background:var(--surface-2);border:1.5px solid var(--amber);border-radius:var(--radius-sm);padding:16px;cursor:pointer;transition:all 0.2s"
+           onmouseover="this.style.background='var(--amber-dim)'"
+           onmouseout="this.style.background='var(--surface-2)'">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+          <span style="font-size:20px">🟡</span>
+          <span style="font-size:13px;font-weight:700;color:var(--text)">Validar com HITL</span>
+          <span style="font-size:9px;font-weight:800;background:var(--amber);color:#000;padding:2px 7px;border-radius:99px;margin-left:auto">RECOMENDADO</span>
+        </div>
+        <div style="font-size:11px;color:var(--text-3);line-height:1.5;padding-left:30px">
+          Abre o sistema com co-piloto humano. A IA executa e para quando precisar da sua ajuda. Cada correção é salva no Brain.
+        </div>
+      </div>
+      <div onclick="_mppExecutarRobo()"
+           style="background:var(--surface-2);border:1px solid var(--border-2);border-radius:var(--radius-sm);padding:14px;cursor:pointer;transition:all 0.2s"
+           onmouseover="this.style.borderColor='var(--cyan)'"
+           onmouseout="this.style.borderColor='var(--border-2)'">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+          <span style="font-size:18px">🤖</span>
+          <span style="font-size:13px;font-weight:600;color:var(--text)">Gravar direto</span>
+          <span style="font-size:9px;font-weight:700;background:var(--surface-3);color:var(--text-3);padding:2px 7px;border-radius:99px;margin-left:auto">SEM VALIDAÇÃO</span>
+        </div>
+        <div style="font-size:11px;color:var(--text-3);line-height:1.5;padding-left:28px">
+          Executa imediatamente. Pode gravar cliques errados se algum seletor mudou.
+        </div>
+      </div>
+      <div style="text-align:center">
+        <button class="btn btn-ghost" style="font-size:11px" onclick="_mppAbrirRoteiro()">
+          Só abrir o roteiro para editar →
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="toast-container"></div>
+
+<div class="modal" id="modalFilaAulas">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" style="background: var(--bg-2); border: 1px solid var(--border);">
+      <div class="modal-header">
+        <h5 class="modal-title" style="color: var(--text);">📚 Importar Cronograma (Texto Livre)</h5>
+      </div>
+      <div class="modal-body">
+        <p style="color: var(--text-2); font-size: 13px;">Cole abaixo o texto do cronograma exatamente como o Gem gerou (Aula X.X: Título: Objetivo).</p>
+        
+        <textarea id="textoFilaInput" class="field-textarea" rows="10" placeholder="🏗️ Módulo 01: Setup...&#10;Aula 1.1: Papéis e Permissões: A diferença entre..."></textarea>
+        
+        <div id="statusFila" style="margin-top: 15px; max-height: 250px; overflow-y: auto; display: none; padding: 10px; background: var(--bg-1); border-radius: 6px;">
+           </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="fecharModalFila()">Fechar</button>
+        <button class="btn btn-primary" id="btnIniciarFila" onclick="iniciarFilaGeracaoTexto()">🚀 Iniciar Automação das Aulas</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════
+// FIX BUG-HTML-5: CTRL+S — Salvar com teclado
+// ════════════════════════════════════════
+document.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+    e.preventDefault();
+    if (typeof arquivoAtual !== 'undefined' && arquivoAtual) salvarRoteiro(true);
+  }
+  // FIX BUG-HTML-9: Escape fecha modais
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-backdrop.open').forEach(m => m.classList.remove('open'));
+    const mv = document.getElementById('modal-video');
+    if (mv && mv.classList.contains('open')) fecharVideo();
+  }
+});
+
+// ════════════════════════════════════════
+// THEME
+// ════════════════════════════════════════
+function applyTheme(theme) {
+  const html = document.documentElement;
+  if (theme === 'light') {
+    html.classList.add('light');
+    document.getElementById('theme-opt-light').classList.add('active');
+    document.getElementById('theme-opt-dark').classList.remove('active');
+  } else {
+    html.classList.remove('light');
+    document.getElementById('theme-opt-dark').classList.add('active');
+    document.getElementById('theme-opt-light').classList.remove('active');
+  }
+  // Re-render charts with new theme colors
+  setTimeout(() => {
+    drawTrendChart(historico.aulas);
+    ['aulas','memoria','horas'].forEach(k => {
+      const d = historico[k];
+      const colors = { aulas: '#00e5e5', memoria: '#3b82f6', horas: '#8b5cf6' };
+      if (d?.length) drawSparkline('spark-' + k, d, colors[k]);
+    });
+  }, 50);
+}
+
+function toggleTheme() {
+  const isLight = document.documentElement.classList.contains('light');
+  const next = isLight ? 'dark' : 'light';
+  localStorage.setItem('training-os-theme', next);
+  applyTheme(next);
+}
+
+function initTheme() {
+  const saved = localStorage.getItem('training-os-theme');
+  const sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  applyTheme(saved || (sysDark ? 'dark' : 'light'));
+}
+
+// ════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════
+let roteiroAtual = null;
+let arquivoAtual = '';
+let cacheRoteiros = [];
+let historico = { aulas: [], memoria: [], horas: [] };
+let sseSource = null;
+
+// ════════════════════════════════════════
+// INIT E HOTKEYS
+// ════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  atualizarData();
+  carregarRoteiros();
+  carregarMetricas();
+  iniciarSSE();
+  animarBarras();
+  animarRoadmap();
+
+  // ATALHOS DE TECLADO (Ctrl+S e Escape)
+  document.addEventListener('keydown', e => {
+    // Salvar
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+      e.preventDefault();
+      if (roteiroAtual) salvarRoteiro(true);
+    }
+    // Fechar Modais com Esc
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-backdrop.open').forEach(el => el.classList.remove('open'));
+      fecharVideo();
+    }
+    // Salvar Renomear com Enter
+    if (e.key === 'Enter' && document.getElementById('modal-renomear').classList.contains('open')) {
+        confirmarRenomear();
+    }
+  });
+});
+
+function atualizarData() {
+  const d = new Date();
+  const opts = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+  document.getElementById('current-date').textContent =
+    d.toLocaleDateString('pt-BR', opts);
+}
+
+// ════════════════════════════════════════
+// TAB NAVIGATION
+// ════════════════════════════════════════
+function showTab(name) {
+  document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');
+  if (name === 'overview') animarBarras();
+}
+
+// ════════════════════════════════════════
+// SSE — REAL-TIME STATUS (com fallback polling)
+// ════════════════════════════════════════
+function iniciarSSE() {
+  try {
+    sseSource = new EventSource('/api/status-stream');
+    sseSource.onmessage = e => processarStatus(JSON.parse(e.data));
+    sseSource.onerror = () => {
+      sseSource.close();
+      setTimeout(pollingFallback, 3000);
+    };
+  } catch {
+    setTimeout(pollingFallback, 3000);
+  }
+}
+
+async function pollingFallback() {
+  try {
+    const r = await fetch('/api/status');
+    if (!r.ok) return;
+    processarStatus(await r.json());
+  } catch {}
+  setTimeout(pollingFallback, 3000);
+}
+
+function processarStatus(status) {
+  const overlay = document.getElementById('loading-overlay');
+  const live = document.getElementById('live-indicator');
+  const fill = document.querySelector('.loader-progress-fill');
+  const pctLabel = document.getElementById('loader-pct');
+
+  if (status.ocupado) {
+    overlay.classList.add('visible');
+    document.getElementById('loading-msg').textContent = status.mensagem || 'Processando…';
+    live.querySelector('.live-dot').style.background = 'var(--amber)';
+    live.querySelector('.live-dot').style.boxShadow = '0 0 6px var(--amber)';
+    
+    // 🟢 NOVO: Se tiver porcentagem, trava a animação e preenche fisicamente
+    if (status.progresso !== null && status.progresso !== undefined) {
+        fill.style.animation = 'none';
+        fill.style.transition = 'transform 0.2s ease'; // Transição suave
+        fill.style.transform = `scaleX(${status.progresso / 100})`;
+        pctLabel.textContent = `${status.progresso}%`;
+    } else {
+        // Volta pro modo "vai e vem" (Ex: Robô atuando na tela, onde não sabemos o % final)
+        fill.style.animation = 'indeterminate 1.5s ease infinite';
+        fill.style.transition = 'none';
+        pctLabel.textContent = '';
+    }
+
+  } else {
+    overlay.classList.remove('visible');
+    live.querySelector('.live-dot').style.background = 'var(--green)';
+    live.querySelector('.live-dot').style.boxShadow = '0 0 6px var(--green)';
+    
+    // Reset visual
+    fill.style.animation = 'indeterminate 1.5s ease infinite';
+    fill.style.transition = 'none';
+    pctLabel.textContent = '';
+
+    if (status.erro) {
+      toast(status.erro, 'error');
+      fetch('/api/limpar-status', { method: 'POST' }).catch(() => {});
+    }
+    if (status.sucesso) {
+      toast(status.sucesso, 'success');
+      fetch('/api/limpar-status', { method: 'POST' }).catch(() => {});
+      carregarRoteiros();
+      carregarMetricas();
+    }
+  }
+}
+
+async function cancelarProcesso() {
+  try {
+    await fetch('/api/cancelar', { method: 'POST' });
+    toast('Processo interrompido.', 'info');
+  } catch {
+    toast('Falha ao cancelar.', 'error');
+  }
+}
+
+// ════════════════════════════════════════
+// METRICS + SPARKLINES
+// ════════════════════════════════════════
+let prevMetrics = {};
+
+async function carregarMetricas() {
+  try {
+    const r = await fetch('/api/metricas');
+    if (!r.ok) throw new Error();
+    const d = await r.json();
+
+    animarNumero('metric-aulas',    d.total_aulas);
+    animarNumero('metric-memoria',  d.total_memorizado);
+    animarNumero('metric-horas',    d.horas_poupadas);
+    document.getElementById('metric-dinheiro').textContent =
+      'R$ ' + (d.dinheiro_poupado || 0).toLocaleString('pt-BR');
+
+    animarNumero('metric-hits', d.self_healing_hits || 0);
+
+    // Deltas
+    renderDelta('delta-aulas',   d.total_aulas,      prevMetrics.total_aulas,      'aulas esta semana');
+    renderDelta('delta-memoria', d.total_memorizado,  prevMetrics.total_memorizado,  'entradas na memória');
+    renderDelta('delta-horas',   d.horas_poupadas,    prevMetrics.horas_poupadas,    'h vs semana anterior');
+    renderDelta('delta-dinheiro',d.dinheiro_poupado,  prevMetrics.dinheiro_poupado,  'vs semana anterior');
+
+    historico.aulas.push(d.total_aulas || 0);
+    historico.memoria.push(d.total_memorizado || 0);
+    historico.horas.push(d.horas_poupadas || 0);
+    if (historico.aulas.length > 12) historico.aulas.shift();
+
+    drawSparkline('spark-aulas',    historico.aulas,   '#00e5e5');
+    drawSparkline('spark-memoria',  historico.memoria, '#3b82f6');
+    drawSparkline('spark-horas',    historico.horas,   '#8b5cf6');
+    drawTrendChart(historico.aulas);
+
+    prevMetrics = { ...d };
+  } catch {}
+
+  setTimeout(carregarMetricas, 30000);
+}
+
+function animarNumero(id, valor) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const inicio = parseInt(el.textContent.replace(/\D/g,'')) || 0;
+  const fim = parseInt(valor) || 0;
+  if (inicio === fim) return;
+  const dur = 800, passo = 16;
+  const delta = fim - inicio;
+  let elapsed = 0;
+  const timer = setInterval(() => {
+    elapsed += passo;
+    const t = Math.min(elapsed / dur, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    el.textContent = Math.round(inicio + delta * ease);
+    if (t >= 1) clearInterval(timer);
+  }, passo);
+}
+
+function renderDelta(id, atual, anterior, label) {
+  const el = document.getElementById(id);
+  if (!el || anterior === undefined) return;
+  const diff = (atual || 0) - (anterior || 0);
+  if (diff === 0) return;
+  const pos = diff > 0;
+  el.innerHTML = `<span class="${pos ? 'delta-pos' : 'delta-neg'}">${pos ? '↑' : '↓'} ${Math.abs(diff)} ${label}</span>`;
+}
+
+function drawSparkline(id, data, color) {
+  const canvas = document.getElementById(id);
+  if (!canvas || data.length < 2) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width = canvas.offsetWidth * devicePixelRatio;
+  const H = canvas.height = canvas.offsetHeight * devicePixelRatio;
+  ctx.clearRect(0, 0, W, H);
+
+  const isLight = document.documentElement.classList.contains('light');
+  const alpha   = isLight ? '30' : '44';
+  const opacity = isLight ? 0.55 : 0.4;
+
+  const min = Math.min(...data), max = Math.max(...data);
+  const range = max - min || 1;
+  const pts = data.map((v, i) => ({
+    x: (i / (data.length - 1)) * W,
+    y: H - ((v - min) / range) * H * 0.8 - H * 0.1,
+  }));
+
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, color + alpha);
+  grad.addColorStop(1, color + '00');
+
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for (let i = 1; i < pts.length; i++) {
+    const cp = { x: (pts[i-1].x + pts[i].x) / 2, y: pts[i-1].y };
+    ctx.bezierCurveTo(cp.x, cp.y, cp.x, pts[i].y, pts[i].x, pts[i].y);
+  }
+  ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
+  ctx.fillStyle = grad; ctx.fill();
+
+  ctx.globalAlpha = opacity;
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for (let i = 1; i < pts.length; i++) {
+    const cp = { x: (pts[i-1].x + pts[i].x) / 2, y: pts[i-1].y };
+    ctx.bezierCurveTo(cp.x, cp.y, cp.x, pts[i].y, pts[i].x, pts[i].y);
+  }
+  ctx.strokeStyle = color; ctx.lineWidth = 1.5 * devicePixelRatio;
+  ctx.stroke();
+  ctx.globalAlpha = 1;
+}
+
+function drawTrendChart(data) {
+  const canvas = document.getElementById('trend-chart');
+  if (!canvas) return;
+  const W = canvas.width  = canvas.offsetWidth  * devicePixelRatio;
+  const H = canvas.height = canvas.offsetHeight * devicePixelRatio;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, W, H);
+
+  const isLight = document.documentElement.classList.contains('light');
+  const lineColor  = isLight ? '#007a7a' : '#00e5e5';
+  const fillStart  = isLight ? 'rgba(0,122,122,0.18)' : 'rgba(0,229,229,0.25)';
+  const fillEnd    = isLight ? 'rgba(0,122,122,0)' : 'rgba(0,229,229,0)';
+  const gridColor  = isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.04)';
+  const labelColor = isLight ? 'rgba(71,85,105,0.6)' : 'rgba(148,163,184,0.5)';
+
+  const series = data.length >= 4 ? data : [0,1,2,3,3,4,5,data[data.length-1]||0];
+  const min = 0, max = Math.max(...series, 1);
+  const pad = { l: 30 * devicePixelRatio, r: 12, t: 12, b: 28 * devicePixelRatio };
+  const cW = W - pad.l - pad.r, cH = H - pad.t - pad.b;
+
+  const labels = ['S1','S2','S3','S4','S5','S6','S7','S8'];
+  const pts = series.map((v, i) => ({
+    x: pad.l + (i / (series.length - 1)) * cW,
+    y: pad.t + (1 - (v - min) / (max - min)) * cH,
+  }));
+
+  ctx.strokeStyle = gridColor;
+  ctx.lineWidth = devicePixelRatio;
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.t + (i / 4) * cH;
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y); ctx.stroke();
+  }
+
+  ctx.fillStyle = labelColor;
+  ctx.font = `${9 * devicePixelRatio}px JetBrains Mono, monospace`;
+  ctx.textAlign = 'right';
+  for (let i = 0; i <= 4; i++) {
+    const v = Math.round(max - (i / 4) * max);
+    const y = pad.t + (i / 4) * cH;
+    ctx.fillText(v, pad.l - 5 * devicePixelRatio, y + 3 * devicePixelRatio);
+  }
+
+  const grad = ctx.createLinearGradient(0, pad.t, 0, pad.t + cH);
+  grad.addColorStop(0, fillStart);
+  grad.addColorStop(1, fillEnd);
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for (let i = 1; i < pts.length; i++) {
+    const cx = (pts[i-1].x + pts[i].x) / 2;
+    ctx.bezierCurveTo(cx, pts[i-1].y, cx, pts[i].y, pts[i].x, pts[i].y);
+  }
+  ctx.lineTo(pts[pts.length-1].x, pad.t + cH);
+  ctx.lineTo(pts[0].x, pad.t + cH);
+  ctx.closePath();
+  ctx.fillStyle = grad; ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for (let i = 1; i < pts.length; i++) {
+    const cx = (pts[i-1].x + pts[i].x) / 2;
+    ctx.bezierCurveTo(cx, pts[i-1].y, cx, pts[i].y, pts[i].x, pts[i].y);
+  }
+  ctx.strokeStyle = lineColor; ctx.lineWidth = 2 * devicePixelRatio; ctx.stroke();
+
+  pts.forEach((p, i) => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 3 * devicePixelRatio, 0, Math.PI * 2);
+    ctx.fillStyle = lineColor; ctx.fill();
+    ctx.fillStyle = labelColor;
+    ctx.font = `${9 * devicePixelRatio}px JetBrains Mono, monospace`;
+    ctx.textAlign = 'center';
+    ctx.fillText(labels[i] || '', p.x, H - 6 * devicePixelRatio);
+  });
+}
+
+// ════════════════════════════════════════
+// ANIMATIONS
+// ════════════════════════════════════════
+function animarBarras() {
+  setTimeout(() => {
+    document.querySelectorAll('.bar-fill').forEach(b => b.classList.add('animate'));
+  }, 200);
+}
+
+function animarRoadmap() {
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('animate');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.3 });
+
+  document.querySelectorAll('.roadmap-progress-fill').forEach(el => {
+    const pct = parseFloat(el.dataset.pct || 0);
+    el.style.width = (pct * 100) + '%';
+    observer.observe(el);
+  });
+}
+
+// ════════════════════════════════════════
+// STUDIO — FILE LIST & SEARCH
+// ════════════════════════════════════════
+async function carregarRoteiros() {
+  try {
+    const r = await fetch('/api/roteiros');
+    if (!r.ok) throw new Error();
+    cacheRoteiros = await r.json();
+    renderizarListaRoteiros();
+    if (arquivoAtual) atualizarBotoesPipeline();
+  } catch {}
+}
+
+function renderizarListaRoteiros() {
+  const container = document.getElementById('lista-roteiros');
+  if (!container) return;
+
+  if (!cacheRoteiros.length) {
+    container.innerHTML = `<div style="padding:20px 12px;text-align:center;font-size:11px;color:var(--text-3)">Nenhum treinamento ainda.</div>`;
+    return;
+  }
+
+  // FIX BUG-HTML-8: substituído innerHTML com template strings por criação segura de DOM
+  // Previne XSS via nomes de treinamento com HTML/JS injetado.
+  container.innerHTML = '';
+  cacheRoteiros.forEach(r => {
+    const sel = arquivoAtual === r.arquivo;
+    let icon = '📄';
+    if (r.tem_video) icon = '🎬';
+
+    const item = document.createElement('div');
+    item.className = 'roteiro-item' + (sel ? ' selected' : '');
+    item.addEventListener('click', () => carregarRoteiro(r.arquivo));  // sem onclick string
+
+    const iconEl = document.createElement('div');
+    iconEl.className = 'roteiro-icon';
+    iconEl.textContent = icon;  // textContent previne XSS
+
+    // Badge de qualidade — só exibe se aprovado ou reprovado (não em "sem_acoes")
+    if (r.qualidade === 'aprovado' || r.qualidade === 'reprovado') {
+      const badge = document.createElement('span');
+      badge.className = `qualidade-badge ${r.qualidade}`;
+      badge.textContent = r.qualidade === 'aprovado' ? '✓' : '✕';
+      badge.title = r.qualidade_motivo || '';  // tooltip com o motivo completo
+      iconEl.appendChild(badge);
+    }
+
+    const info = document.createElement('div');
+    info.className = 'roteiro-info';
+
+    const name = document.createElement('div');
+    name.className = 'roteiro-name';
+    name.textContent = r.nome;  // textContent previne XSS
+
+    const meta = document.createElement('div');
+    meta.className = 'roteiro-meta';
+
+    const passos = document.createElement('span');
+    passos.textContent = `${r.qtd_passos || 0} passos`;
+    meta.appendChild(passos);
+
+    if (r.tem_video)  { const b = document.createElement('span'); b.className='media-badge mb-video'; b.textContent='Vídeo'; meta.appendChild(b); }
+    if (r.tem_scorm)  { const b = document.createElement('span'); b.className='media-badge mb-scorm'; b.textContent='SCORM'; meta.appendChild(b); }
+    if (r.tem_pdf)    { const b = document.createElement('span'); b.className='media-badge mb-pdf'; b.textContent='PDF'; meta.appendChild(b); }
+    if (r.origem === 'ia') {
+      const bIA = document.createElement('span');
+      if (r.hitl_validado) {
+        bIA.className = 'media-badge mb-ia-ok';
+        bIA.textContent = '✓ IA';
+        bIA.title = 'Gerado por IA e validado com HITL';
+      } else {
+        bIA.className = 'media-badge mb-ia-warn';
+        bIA.textContent = '⚠ IA';
+        bIA.title = 'Gerado por IA — não validado com HITL. Execute a validação antes de gravar.';
+      }
+      meta.appendChild(bIA);
+    }
+
+    info.appendChild(name);
+    info.appendChild(meta);
+    item.appendChild(iconEl);
+    item.appendChild(info);
+    container.appendChild(item);
+  });
+  
+  filtrarRoteiros(); 
+}
+
+function filtrarRoteiros() {
+    const input = document.getElementById('busca-treinamentos');
+    if (!input) return;
+    
+    const termo = input.value.toLowerCase();
+    const cards = document.querySelectorAll('.roteiro-item'); 
+    
+    cards.forEach(card => {
+        const titulo = card.querySelector('.roteiro-name').innerText.toLowerCase();
+        if (titulo.includes(termo)) {
+            card.style.display = 'flex';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+// ════════════════════════════════════════
+// STUDIO — LOAD / SAVE / DELETE
+// ════════════════════════════════════════
+async function carregarRoteiro(arquivo) {
+  try {
+    arquivoAtual = arquivo;
+    renderizarListaRoteiros();
+    const r = await fetch(`/api/roteiros/${arquivo}`);
+    if (!r.ok) throw new Error('Roteiro não encontrado');
+    roteiroAtual = await r.json();
+
+    document.getElementById('editor-title').textContent  = roteiroAtual.metadata?.nome_aula || arquivo;
+    document.getElementById('editor-title').style.color  = 'var(--text)';
+    document.getElementById('editor-title').style.fontStyle = 'normal';
+    document.getElementById('empty-state').style.display = 'none';
+    document.getElementById('editor-area').classList.add('visible');
+    document.getElementById('action-buttons').style.display = 'flex';
+    document.getElementById('editor-actions').style.display = 'flex'; 
+
+    atualizarBotoesPipeline();
+    renderizarPassos();
+  } catch (e) {
+    toast('Erro ao carregar roteiro: ' + e.message, 'error');
+  }
+}
+
+async function salvarRoteiro(notificar = true) {
+  if (!arquivoAtual || !roteiroAtual) return;
+  try {
+    const r = await fetch(`/api/roteiros/${arquivoAtual}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(roteiroAtual),
+    });
+    if (!r.ok) throw new Error('Falha ao salvar');
+    if (notificar) toast('Salvo com sucesso!', 'success');
+    else renderizarPassos();
+  } catch (e) {
+    toast(e.message, 'error');
+  }
+}
+
+function confirmarExcluir() {
+  abrirConfirm(
+    'Excluir "' + (roteiroAtual?.metadata?.nome_aula || arquivoAtual) + '"? Esta ação não pode ser desfeita.',
+    async () => {
+      try {
+        const r = await fetch(`/api/roteiros/${arquivoAtual}`, { method: 'DELETE' });
+        if (!r.ok) throw new Error('Falha ao excluir');
+        arquivoAtual = ''; roteiroAtual = null;
+        document.getElementById('editor-area').classList.remove('visible');
+        document.getElementById('empty-state').style.display = '';
+        document.getElementById('action-buttons').style.display = 'none';
+        document.getElementById('editor-actions').style.display = 'none';
+        document.getElementById('editor-title').textContent  = 'Selecione um treinamento';
+        document.getElementById('editor-title').style.color  = 'var(--text-3)';
+        document.getElementById('editor-title').style.fontStyle = 'italic';
+        carregarRoteiros();
+        toast('🗑️ Treinamento removido do catálogo.', 'info');
+      } catch (e) {
+        toast(e.message, 'error');
+      }
+    }
+  );
+}
+
+// ════════════════════════════════════════
+// PIPELINE ACTIONS
+// ════════════════════════════════════════
+async function executarRobo() {
+  try {
+    await salvarRoteiro(false);
+    const r = await fetch(`/api/executar-robo/${arquivoAtual}`, { method: 'POST' });
+    if (!r.ok) throw new Error('Falha ao executar o robô');
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function renderizarVideo() {
+  try {
+    await salvarRoteiro(false);
+    const r = await fetch(`/api/renderizar/${arquivoAtual}`, { method: 'POST' });
+    if (!r.ok) throw new Error('Falha ao renderizar o vídeo');
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function gerarScorm() {
+  try {
+    await salvarRoteiro(false);
+    const r = await fetch(`/api/gerar-scorm/${arquivoAtual}`, { method: 'POST' });
+    if (!r.ok) throw new Error('Falha ao gerar SCORM');
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function gerarPDF() {
+    if (!arquivoAtual) return;
+    try {
+        await salvarRoteiro(false);
+        const r = await fetch(`/api/gerar-pdf/${arquivoAtual}`, { method: 'POST' });
+        if (!r.ok) throw new Error();
+        toast('📜 Forjando os pergaminhos sagrados (PDF)...', 'info');
+    } catch (e) {
+        toast('Erro ao iniciar gerador de PDF', 'error');
+    }
+}
+
+async function ingestarCoachIA() {
+    if (!arquivoAtual) return;
+    try {
+        toast('🔄 Farmando XP para a Aura...', 'info');
+        const r = await fetch(`/api/ingest/${arquivoAtual}`, { method: 'POST' });
+        if (!r.ok) throw new Error('Falha ao indexar conhecimento no Coach IA.');
+        toast('⚡ Level Up! Aura dominou este fluxo.', 'success');
+        carregarRoteiros(); // 👈 Isso garante que o botão atualize na mesma hora
+    } catch (e) {
+        toast(e.message, 'error');
+    }
+}
+
+// ════════════════════════════════════════
+// RENOMEAR E DUPLICAR (NOVOS MODAIS)
+// ════════════════════════════════════════
+async function duplicarTreinamento() {
+    if(!arquivoAtual) return;
+    try {
+        const r = await fetch(`/api/duplicar/${arquivoAtual}`, { method: 'POST' });
+        if (!r.ok) throw new Error();
+        toast('Treinamento duplicado com sucesso!', 'success');
+        carregarRoteiros(); 
+    } catch (e) {
+        toast('Erro ao duplicar roteiro', 'error');
+    }
+}
+
+function abrirModalRenomear() {
+    if (!arquivoAtual) return;
+    const nomeAtual = roteiroAtual?.metadata?.nome_aula || '';
+    document.getElementById('input-novo-nome').value = nomeAtual;
+    abrirModal('modal-renomear');
+    setTimeout(() => document.getElementById('input-novo-nome').focus(), 100);
+}
+
+async function confirmarRenomear() {
+    const novoNome = document.getElementById('input-novo-nome').value.trim();
+    const nomeAtual = roteiroAtual?.metadata?.nome_aula || '';
+    
+    if (!novoNome || novoNome === nomeAtual) {
+        fecharModal('modal-renomear');
+        return;
+    }
+
+    try {
+        const r = await fetch(`/api/renomear/${arquivoAtual}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ novo_nome: novoNome })
+        });
+        
+        if (!r.ok) {
+            const err = await r.json();
+            throw new Error(err.erro || 'Falha ao renomear');
+        }
+        
+        const resposta = await r.json();
+        fecharModal('modal-renomear');
+        toast('Treinamento renomeado com sucesso!', 'success');
+        
+        arquivoAtual = resposta.novo_arquivo;
+        
+        if (roteiroAtual && roteiroAtual.metadata) {
+            roteiroAtual.metadata.nome_aula = novoNome;
+            roteiroAtual.metadata.id_treinamento = resposta.novo_arquivo.replace('.json', '');
+            document.getElementById('editor-title').textContent = novoNome;
+        }
+        
+        carregarRoteiros();
+    } catch (e) {
+        fecharModal('modal-renomear');
+        toast('Erro ao renomear: ' + e.message, 'error');
+    }
+}
+
+// ════════════════════════════════════════
+// PIPELINE BUTTON STATE
+// ════════════════════════════════════════
+function atualizarBotoesPipeline() {
+  if (!arquivoAtual) return;
+  const cfg = cacheRoteiros.find(r => r.arquivo === arquivoAtual);
+  if (!cfg) return;
+
+  const btnR = document.getElementById('btn-gen-robo');
+  const btnV = document.getElementById('btn-gen-video');
+  const btnS = document.getElementById('btn-gen-scorm');
+  const btnP = document.getElementById('btn-gen-pdf');
+  const btnC = document.getElementById('btn-gen-coach');
+  
+  const btnA = document.getElementById('btn-assistir');
+  const btnD = document.getElementById('btn-baixar-scorm');
+  const btnDP = document.getElementById('btn-baixar-pdf');
+
+[btnR, btnV, btnS, btnP, btnC].forEach(b => {
+      if(b) {
+          b.classList.remove('pulse');
+          b.style.borderColor = '';
+          b.style.color = '';
+      }
+  });
+
+  // Reseta o botão da Aura para o visual padrão
+  if(btnC) {
+      btnC.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/><path d="M12 12 2.1 7.1"/></svg> <span class="lbl">5. Coach IA</span>`;
+  }
+
+  if (!cfg.tem_audio) {
+    btnR.classList.add('pulse');
+    btnR.querySelector('.lbl').textContent = '1. Executar Robô';
+  } else if (!cfg.tem_video) {
+    btnV.classList.add('pulse');
+    btnR.querySelector('.lbl').textContent = '1. Refazer Robô';
+    btnV.querySelector('.lbl').textContent = '2. Gerar Vídeo';
+  } else if (!cfg.tem_scorm) {
+    btnS.classList.add('pulse');
+    btnS.querySelector('.lbl').textContent = '3. Gerar SCORM';
+  } else if (!cfg.tem_pdf) {
+    btnP?.classList.add('pulse');
+  } else if (!cfg.tem_coach) {
+    btnC?.classList.add('pulse'); // Pisca a Aura pedindo para ser ensinada
+  } else {
+    // AURA JÁ ESTÁ ENSINADA: Fica verde com check e para de piscar!
+    if (btnC) {
+        btnC.style.borderColor = 'var(--green)';
+        btnC.style.color = 'var(--green)';
+        btnC.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> <span class="lbl">Aura Ensinada</span>`;
+    }
+  }
+
+  if (cfg.tem_video)  { btnA.classList.add('visible'); btnA.dataset.url = cfg.video_url || ''; }
+  else                { btnA.classList.remove('visible'); }
+  
+  if (cfg.tem_scorm)  { btnD.classList.add('visible'); btnD.href = cfg.scorm_url || '#'; }
+  else                { btnD.classList.remove('visible'); }
+  
+  if (cfg.tem_pdf)    { btnDP?.classList.add('visible'); btnDP.href = cfg.pdf_url || '#'; }
+  else                { btnDP?.classList.remove('visible'); }
+}
+
+// ════════════════════════════════════════
+// STUDIO — EDITOR RENDER & ADICIONAR AÇÕES
+// ════════════════════════════════════════
+const tipoLabel = { navigation:'Nav', form_fill:'Form', confirmation:'Confirm', creation:'Criar', deletion:'Deletar', operacao:'Op' };
+const tipoColor = { navigation:'var(--blue)', form_fill:'var(--cyan)', confirmation:'var(--green)', creation:'var(--violet)', deletion:'var(--red)', operacao:'var(--amber)' };
+
+function adicionarAcao(pi) {
+    if (!roteiroAtual.passos[pi].acoes_tecnicas) {
+        roteiroAtual.passos[pi].acoes_tecnicas = [];
+    }
+    roteiroAtual.passos[pi].acoes_tecnicas.push({
+        acao: "clique",
+        seletor_css: "",
+        micro_narracao: ""
+    });
+    salvarRoteiro(false);
+    renderizarPassos();
+}
+
+function mudarVozIA(valor) {
+  if (!roteiroAtual.configuracao_gravacao) {
+    roteiroAtual.configuracao_gravacao = {
+      gravar_video: true,
+      pasta_destino: "videos_gerados",
+      voz_ia: "pt-BR-FranciscaNeural"
+    };
+  }
+  roteiroAtual.configuracao_gravacao.voz_ia = valor;
+  salvarRoteiro(false);
+  
+  if (valor === 'elevenlabs') {
+    toast('🎙️ Voz Premium ativada! (Pode consumir créditos da API)', 'success');
+  } else {
+    toast('🎙️ Voz de Rascunho ativada! (Modo Gratuito)', 'info');
+  }
+}
+
+
+function renderizarPassos() {
+  const container = document.getElementById('passos-container');
+  if (!container || !roteiroAtual?.passos) return;
+  container.innerHTML = '';
+
+  // 🟢 NOVO: Card de Configuração de Locução no topo do Editor
+  const configVoz = roteiroAtual.configuracao_gravacao?.voz_ia || 'pt-BR-FranciscaNeural';
+  const cfgDiv = document.createElement('div');
+  cfgDiv.className = 'step-card';
+  cfgDiv.style.marginBottom = '16px';
+  cfgDiv.style.borderColor = 'rgba(0, 229, 229, 0.3)'; // Borda ciano sutil
+  cfgDiv.innerHTML = `
+    <div class="step-header" style="background: var(--bg-3);">
+      <div style="font-size:16px; margin-right:4px;">🎙️</div>
+      <div class="step-title">Estúdio de Locução</div>
+      <span class="step-type-badge" style="background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(0,229,229,0.3)">AUDIO</span>
+    </div>
+    <div class="step-body" style="padding: 14px 16px;">
+       <div style="display:flex; gap:12px; align-items:center; flex-wrap: wrap;">
+         <select class="field-select" style="max-width: 280px; font-weight: 600; cursor: pointer; color: ${configVoz === 'elevenlabs' ? 'var(--amber)' : 'var(--text)'};" onchange="mudarVozIA(this.value); this.style.color = this.value === 'elevenlabs' ? 'var(--amber)' : 'var(--text)';">
+            <option value="pt-BR-FranciscaNeural" ${configVoz !== 'elevenlabs' ? 'selected' : ''}>Rascunho (Edge TTS - Grátis)</option>
+            <option value="elevenlabs" ${configVoz === 'elevenlabs' ? 'selected' : ''}>Premium (ElevenLabs - Realista)</option>
+         </select>
+         <span style="font-size: 11px; color: var(--text-3); line-height: 1.4;">
+           <strong>Dica:</strong> Use o <i>Rascunho</i> para validar a gravação e mude para <i>Premium</i> apenas antes de gerar o Vídeo Final.
+         </span>
+       </div>
+    </div>
+  `;
+  container.appendChild(cfgDiv);
+
+  // Renderiza os passos normais
+  roteiroAtual.passos.forEach((passo, pi) => {
+    const tipo = passo.tipo_passo || 'operacao';
+    const cor  = tipoColor[tipo] || 'var(--text-3)';
+    const lbl  = tipoLabel[tipo] || tipo;
+
+    const div = document.createElement('div');
+    div.className = 'step-card';
+    div.innerHTML = `
+      <div class="step-header">
+        <div class="step-num">${passo.id_passo}</div>
+        <div class="step-title">PASSO ${passo.id_passo}</div>
+        <span class="step-type-badge" style="background:${cor}18;color:${cor};border:1px solid ${cor}30">${lbl}</span>
+      </div>
+      <div class="step-body">
+        <div>
+          <div class="field-label">Narração Principal — Âncora</div>
+          <textarea class="field-textarea" rows="2"
+            oninput="roteiroAtual.passos[${pi}].pedagogia.ancora=this.value"
+          >${passo.pedagogia?.ancora || ''}</textarea>
+        </div>
+        <div>
+          <div class="field-label">Ações Técnicas</div>
+          <div class="action-list" id="action-list-${pi}"></div>
+          <button class="btn-add-action" onclick="adicionarAcao(${pi})">
+            + Adicionar Ação Técnica neste Passo
+          </button>
+        </div>
+      </div>`;
+    container.appendChild(div);
+
+    const actionList = div.querySelector(`#action-list-${pi}`);
+    (passo.acoes_tecnicas || []).forEach((acao, ai) => {
+      if (acao.acao === 'concluir_video') return;
+      const precisa = ['digitar_e_enter','preencher_campo'].includes(acao.acao);
+      const aDiv = document.createElement('div');
+      aDiv.className = 'action-card';
+      aDiv.draggable = false;
+      aDiv.id = `ac-${pi}-${ai}`;
+      aDiv.ondragstart = e => dragStart(e, pi, ai);
+      aDiv.ondragover  = e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; };
+      aDiv.ondragenter = e => e.currentTarget.classList.add('drag-over');
+      aDiv.ondragleave = e => e.currentTarget.classList.remove('drag-over');
+      aDiv.ondrop      = e => { e.currentTarget.classList.remove('drag-over'); drop(e, pi, ai); };
+      aDiv.ondragend   = e => { e.currentTarget.draggable = false; e.currentTarget.style.opacity = ''; };
+
+      aDiv.innerHTML = `
+        <div class="drag-handle"
+          onmousedown="document.getElementById('ac-${pi}-${ai}').draggable=true"
+          onmouseup="document.getElementById('ac-${pi}-${ai}').draggable=false"
+          onmouseleave="document.getElementById('ac-${pi}-${ai}').draggable=false">
+          <svg width="10" height="14" viewBox="0 0 10 14" fill="currentColor">
+            <circle cx="3" cy="2" r="1.2"/><circle cx="7" cy="2" r="1.2"/>
+            <circle cx="3" cy="7" r="1.2"/><circle cx="7" cy="7" r="1.2"/>
+            <circle cx="3" cy="12" r="1.2"/><circle cx="7" cy="12" r="1.2"/>
+          </svg>
+        </div>
+        <div class="action-body">
+          <div class="action-row" style="align-items:center">
+            <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--cyan)">Ação ${ai + 1}</span>
+            <div class="action-controls">
+              <button class="act-btn" onclick="moverAcao(${pi},${ai},-1)" title="↑">↑</button>
+              <button class="act-btn" onclick="moverAcao(${pi},${ai},1)"  title="↓">↓</button>
+              <button class="act-btn" onclick="duplicarAcao(${pi},${ai})" title="Duplicar">⧉</button>
+              <button class="act-btn del" onclick="excluirAcao(${pi},${ai})" title="Excluir">✕</button>
+            </div>
+          </div>
+          <div class="action-row">
+            <select class="field-select" style="flex:1"
+              onchange="roteiroAtual.passos[${pi}].acoes_tecnicas[${ai}].acao=this.value; toggleInput('${pi}-${ai}',this.value)">
+              ${['clique','clique_direito','duplo_clique','digitar_e_enter','preencher_campo','hover'].map(o =>
+                `<option value="${o}" ${acao.acao===o?'selected':''}>${o}</option>`
+              ).join('')}
+            </select>
+            <input id="inp-${pi}-${ai}" class="field-input" style="flex:1;display:${precisa?'block':'none'}"
+              type="text" placeholder="Texto a digitar…" value="${acao.valor_input || ''}"
+              oninput="roteiroAtual.passos[${pi}].acoes_tecnicas[${ai}].valor_input=this.value">
+          </div>
+          
+          <div class="action-row">
+             <input class="field-input" style="flex:1; border-color: var(--violet); color: var(--text);" 
+               type="text" placeholder="Intenção (O que a ação faz)..." value="${acao.intencao_semantica || ''}"
+               oninput="roteiroAtual.passos[${pi}].acoes_tecnicas[${ai}].intencao_semantica=this.value">
+          </div>
+
+          <div class="action-row">
+             <input class="field-input" style="flex:1; font-family:var(--font-mono); font-size:10px; color:var(--text-2);" 
+               type="text" placeholder="Seletor CSS (Apague se estiver errado)..." value="${acao.elemento_alvo?.seletor_hint || ''}"
+               oninput="if(!roteiroAtual.passos[${pi}].acoes_tecnicas[${ai}].elemento_alvo) roteiroAtual.passos[${pi}].acoes_tecnicas[${ai}].elemento_alvo = {}; roteiroAtual.passos[${pi}].acoes_tecnicas[${ai}].elemento_alvo.seletor_hint=this.value">
+          </div>
+          
+          <div class="action-row">
+             <input class="field-input" style="flex:1; font-family:var(--font-mono); font-size:10px; color:var(--amber);" 
+               type="text" placeholder="Validação Agentic UI (Ex: O checkbox fica marcado)..." value="${acao.validacao_esperada?.alvo || ''}"
+               oninput="if(!roteiroAtual.passos[${pi}].acoes_tecnicas[${ai}].validacao_esperada) roteiroAtual.passos[${pi}].acoes_tecnicas[${ai}].validacao_esperada = {tipo: 'estado_visual'}; roteiroAtual.passos[${pi}].acoes_tecnicas[${ai}].validacao_esperada.alvo=this.value">
+          </div>
+
+          <textarea class="field-textarea" rows="1" placeholder="Micro-narração…"
+            oninput="roteiroAtual.passos[${pi}].acoes_tecnicas[${ai}].micro_narracao=this.value"
+          >${acao.micro_narracao || ''}</textarea>
+        </div>`;
+      actionList.appendChild(aDiv);
+    });
+  });
+}
+
+// ════════════════════════════════════════
+// DRAG & DROP E AÇÕES
+// ════════════════════════════════════════
+let _drag = null;
+
+function dragStart(e, pi, ai) {
+  _drag = { pi, ai };
+  e.dataTransfer.effectAllowed = 'move';
+  setTimeout(() => { if (e.target) e.target.style.opacity = '0.4'; }, 0);
+}
+
+function drop(e, destPi, destAi) {
+  e.preventDefault();
+  if (!_drag) return;
+  const { pi, ai } = _drag;
+  if (pi === destPi && ai === destAi) { _drag = null; return; }
+  const m = roteiroAtual.passos[pi].acoes_tecnicas.splice(ai, 1)[0];
+  roteiroAtual.passos[destPi].acoes_tecnicas.splice(destAi, 0, m);
+  _drag = null;
+  salvarRoteiro(false);
+}
+
+function moverAcao(pi, ai, dir) {
+  const arr = roteiroAtual.passos[pi].acoes_tecnicas;
+  if (ai + dir < 0 || ai + dir >= arr.length) return;
+  [arr[ai], arr[ai+dir]] = [arr[ai+dir], arr[ai]];
+  salvarRoteiro(false);
+}
+
+function excluirAcao(pi, ai) {
+  abrirConfirm('Remover esta ação?', () => {
+    roteiroAtual.passos[pi].acoes_tecnicas.splice(ai, 1);
+    salvarRoteiro(false);
+  });
+}
+
+function duplicarAcao(pi, ai) {
+  const clone = JSON.parse(JSON.stringify(roteiroAtual.passos[pi].acoes_tecnicas[ai]));
+  clone.micro_narracao = (clone.micro_narracao || '') + ' (cópia)';
+  roteiroAtual.passos[pi].acoes_tecnicas.splice(ai + 1, 0, clone);
+  salvarRoteiro(false);
+}
+
+function toggleInput(key, acao) {
+  const el = document.getElementById('inp-' + key);
+  if (el) el.style.display = ['digitar_e_enter','preencher_campo'].includes(acao) ? 'block' : 'none';
+}
+
+// ════════════════════════════════════════
+// MODALS GERAIS
+// ════════════════════════════════════════
+function abrirModal(id)  { document.getElementById(id).classList.add('open'); }
+function fecharModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function abrirConfirm(msg, onConfirm) {
+  document.getElementById('confirm-message').textContent = msg;
+  const btn = document.getElementById('confirm-action-btn');
+  btn.onclick = () => { fecharModal('modal-confirmar'); onConfirm(); };
+  abrirModal('modal-confirmar');
+}
+
+function abrirModalGravacao() { abrirModal('modal-gravacao'); setTimeout(() => document.getElementById('input-nome-aula').focus(), 100); }
+function fecharModalGravacao() { fecharModal('modal-gravacao'); }
+
+async function iniciarGravacao() {
+  const nome = document.getElementById('input-nome-aula').value.trim();
+  if (!nome) { toast('Dê um nome para a aula.', 'error'); return; }
+  const obj  = document.getElementById('input-objetivo').value.trim();
+  fecharModal('modal-gravacao');
+  try {
+    const r = await fetch('/api/gravar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome_aula: nome, objetivo: obj }),
+    });
+    if (!r.ok) throw new Error('Falha ao iniciar gravação');
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+function abrirVideo() {
+  const url = document.getElementById('btn-assistir').dataset.url;
+  if (!url) return;
+  document.getElementById('video-player').src = url;
+  document.getElementById('modal-video').classList.add('open');
+  document.getElementById('video-player').play();
+}
+
+function fecharVideo() {
+  const p = document.getElementById('video-player');
+  p.pause(); p.src = '';
+  document.getElementById('modal-video').classList.remove('open');
+}
+
+// ════════════════════════════════════════
+// TOAST SYSTEM
+// ════════════════════════════════════════
+const icons = { success: '✓', error: '✕', info: 'ℹ' };
+
+function toast(msg, tipo = 'info') {
+  const container = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className = `toast ${tipo}`;
+  el.innerHTML = `<span class="toast-icon">${icons[tipo]}</span><span class="toast-msg">${msg}</span>`;
+  container.appendChild(el);
+
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')));
+
+  setTimeout(() => {
+    el.classList.remove('show');
+    el.classList.add('hide');
+    setTimeout(() => el.remove(), 400);
+  }, tipo === 'error' ? 6000 : 4000);
+}
+
+// ════════════════════════════════════════
+// EXPORT KPIs (GERADOR DE CSV REAL)
+// ════════════════════════════════════════
+function exportarKPIs() {
+  if (!historico.aulas || historico.aulas.length === 0) {
+      toast('Não há dados suficientes para exportar.', 'error');
+      return;
+  }
+  
+  const csvRows = ['Semana,Treinamentos_Gerados,Memoria_IA_Indexada,Horas_Poupadas'];
+  for (let i = 0; i < historico.aulas.length; i++) {
+      csvRows.push(`S${i+1},${historico.aulas[i] || 0},${historico.memoria[i] || 0},${historico.horas[i] || 0}`);
+  }
+  
+  const csvString = csvRows.join('\n');
+  const blob = new Blob([csvString], { type: 'text/csv' });
+  const url = window.URL.createObjectURL(blob);
+  
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `relatorio_kpis_training_os.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  window.URL.revokeObjectURL(url);
+  
+  toast('Relatório CSV exportado com sucesso!', 'success');
+}
+
+// ════════════════════════════════════════
+// BIBLIOTECA DE LEGO — REBUILD MANUAL
+// ════════════════════════════════════════
+async function reconstruirBiblioteca() {
+  const btn   = document.getElementById('btn-rebuild-lib');
+  const icon  = document.getElementById('rebuild-icon');
+  const label = document.getElementById('rebuild-label');
+  if (!btn || btn.disabled) return;
+
+  btn.disabled    = true;
+  btn.classList.add('loading');
+  icon.textContent  = '⚙️';
+  label.textContent = 'Reconstruindo...';
+
+  try {
+    const r = await fetch('/api/rebuild-library', { method: 'POST' });
+    const d = await r.json();
+    if (r.ok && d.status === 'sucesso') {
+      const novas = d.total_acoes_novas ?? '?';
+      const total = d.total_acoes_lidas ?? '?';
+      toast(`🧩 Biblioteca atualizada! ${total} peças (${novas} novas).`, 'success');
+    } else {
+      toast('⚠️ Rebuild com aviso: ' + (d.mensagem || d.erro || 'Verifique os roteiros salvos.'), 'info');
+    }
+  } catch (e) {
+    toast('Erro ao reconstruir biblioteca: ' + e.message, 'error');
+  } finally {
+    btn.disabled    = false;
+    btn.classList.remove('loading');
+    icon.textContent  = '🧩';
+    label.textContent = 'Atualizar Biblioteca';
+  }
+}
+
+
+
+// ════════════════════════════════════════
+// MODAL PRÓXIMO PASSO (pós geração IA)
+// ════════════════════════════════════════
+let _mppArquivo = '';
+let _mppNome    = '';
+
+function _abrirModalProximoPasso(arquivo, nome) {
+  _mppArquivo = arquivo || '';
+  _mppNome    = nome    || 'Roteiro';
+  document.getElementById('mpp-titulo').textContent = `"${_mppNome}" está pronto!`;
+  abrirModal('modal-proximo-passo');
+}
+
+async function _mppExecutarHitl() {
+  fecharModal('modal-proximo-passo');
+  if (!_mppArquivo) return;
+  showTab('studio');
+  await carregarRoteiro(_mppArquivo);
+  setTimeout(() => validarHitl(), 400);
+}
+
+async function _mppExecutarRobo() {
+  fecharModal('modal-proximo-passo');
+  if (!_mppArquivo) return;
+  showTab('studio');
+  await carregarRoteiro(_mppArquivo);
+  setTimeout(() => executarRobo(), 400);
+}
+
+function _mppAbrirRoteiro() {
+  fecharModal('modal-proximo-passo');
+  if (!_mppArquivo) return;
+  showTab('studio');
+  carregarRoteiro(_mppArquivo);
+  carregarRoteiros();
+}
+
+// ════════════════════════════════════════
+// HITL VALIDATOR
+// ════════════════════════════════════════
+async function validarHitl() {
+  if (!arquivoAtual) return;
+  try {
+    await salvarRoteiro(false);
+    const r = await fetch(`/api/validar-hitl/${arquivoAtual}`, { method: 'POST' });
+    if (!r.ok) throw new Error('Falha ao iniciar validação HITL');
+    toast('🟡 Validação HITL iniciada — observe a janela do Chrome!', 'info');
+  } catch (e) { toast(e.message, 'error'); }
+}
+// ════════════════════════════════════════
+// RAG — UPLOAD DE MANUAIS PDF
+// ════════════════════════════════════════
+function handleRagDrop(event) {
+  event.preventDefault();
+  event.currentTarget.classList.remove('hover');
+  const files = event.dataTransfer.files;
+  if (files.length) uploadRagFiles(files);
+}
+
+async function uploadRagFiles(files) {
+  const pdfFiles = Array.from(files).filter(f => f.type === 'application/pdf' || f.name.endsWith('.pdf'));
+  if (!pdfFiles.length) {
+    toast('Apenas arquivos PDF são aceitos.', 'error');
+    return;
+  }
+  toast(`Enviando ${pdfFiles.length} manual(is) para a Aura...`, 'info');
+
+  const formData = new FormData();
+  pdfFiles.forEach(f => formData.append('files', f));
+
+  try {
+    const r = await fetch('/api/upload-manual', { method: 'POST', body: formData });
+    const d = await r.json();
+    if (r.ok) {
+      toast(`✅ ${d.indexados || pdfFiles.length} manual(is) indexado(s) com sucesso!`, 'success');
+      if (d.total_manuais !== undefined) {
+        document.getElementById('rag-count').textContent = `${d.total_manuais} Manuais Indexados`;
+      }
+    } else {
+      toast('Erro ao indexar: ' + (d.erro || 'falha desconhecida'), 'error');
+    }
+  } catch {
+    toast('Falha na comunicação com o servidor.', 'error');
+  }
+}
+
+// Close modals on backdrop click
+document.querySelectorAll('.modal-backdrop').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+});
+
+// ════════════════════════════════════════
+// GERAR AULA COM AURA IA
+// ════════════════════════════════════════
+let _aiCycleTimer = null;
+
+const _aiMensagens = [
+  { icon: '🔄', label: 'Memória',       text: 'Farmando XP para a Aura — buscando contexto nos manuais...' },
+  { icon: '🧩', label: 'Lego Factory',  text: 'Selecionando peças do repositório de ações validadas...' },
+  { icon: '🧠', label: 'Síntese',       text: 'Injetando sinapses na base de dados da Aura...' },
+  { icon: '✍️', label: 'Escrita',       text: 'Gerando narrações e tooltips para cada passo do treinamento...' },
+  { icon: '🔗', label: 'Linkagem',      text: 'Vinculando ações técnicas ao roteiro com micro-narrações...' },
+  { icon: '💾', label: 'Commit',        text: 'Salvando o roteiro em disco — quase lá, aguenta...' },
+];
+
+// Mensagens gamificadas por tipo de operação (usadas pelo overlay via WS)
+const _loadingMsgsPorOperacao = {
+  robo:   ['🤖 Traduzindo botões para a Matrix...', '🔍 Hackeando o DOM (com autorização)...', '🎯 Memorizando cada clique com precisão cirúrgica...'],
+  video:  ['🎬 Contratando o locutor da IA...', '🎞️ Equipe de produção na ilha de edição...', '🏆 Renderizando frames... quase no Oscar!'],
+  scorm:  ['📦 Empacotando o conhecimento (Padrão SCORM)...', '🎮 Montando o simulador interativo...', '🚀 Deployando módulo no padrão LMS...'],
+  pdf:    ['📜 Forjando os pergaminhos sagrados...', '📖 Diagramando o Playbook premium...', '🖨️ Compilando o e-book final...'],
+  coach:  ['🔄 Farmando XP para a Aura...', '🧬 Injetando sinapses na base de dados...', '⚡ Indexando vetores no Pinecone...'],
+};
+
+function _getMsgCiclo(tipo) {
+  const msgs = _loadingMsgsPorOperacao[tipo] || ['⚙️ Processando nos bastidores...'];
+  let idx = 0;
+  return () => msgs[idx++ % msgs.length];
+}
+
+function _setAiStatus(tipo, icon, label, msg, mostrarBarra = false) {
+  const box    = document.getElementById('ai-status-box');
+  const elIcon = document.getElementById('ai-status-icon');
+  const elLbl  = document.getElementById('ai-status-label');
+  const elMsg  = document.getElementById('ai-status-msg');
+  const barra  = document.getElementById('ai-progress-wrap');
+
+  box.className = `ai-status-box visible ${tipo}`;
+  elIcon.textContent = icon;
+  elLbl.textContent  = label;
+  elMsg.textContent  = msg;
+  barra.style.display = mostrarBarra ? 'block' : 'none';
+}
+
+function _iniciarCicloMensagens() {
+  let idx = 0;
+  const proxima = () => {
+    const m = _aiMensagens[idx % _aiMensagens.length];
+    _setAiStatus('loading', m.icon, m.label, m.text, true);
+    idx++;
+  };
+  proxima();
+  _aiCycleTimer = setInterval(proxima, 3500);
+}
+
+function _pararCicloMensagens() {
+  if (_aiCycleTimer) { clearInterval(_aiCycleTimer); _aiCycleTimer = null; }
+}
+
+function abrirModalGerarIA() {
+  // Limpa estado anterior
+  document.getElementById('ai-nome-aula').value    = '';
+  document.getElementById('ai-objetivo-aula').value = '';
+  document.getElementById('ai-status-box').className = 'ai-status-box';
+  document.getElementById('btn-gerar-ia').disabled  = false;
+  document.getElementById('btn-gerar-ia-label').textContent = 'Gerar Roteiro';
+  document.getElementById('btn-cancelar-ia').textContent = 'Cancelar';
+  _pararCicloMensagens();
+  abrirModal('modal-gerar-ia');
+  setTimeout(() => document.getElementById('ai-nome-aula').focus(), 120);
+}
+
+function fecharModalGerarIA() {
+  _pararCicloMensagens();
+  fecharModal('modal-gerar-ia');
+}
+
+async function gerarRoteiroIA() {
+  const nomeAula = document.getElementById('ai-nome-aula').value.trim();
+  const objetivo = document.getElementById('ai-objetivo-aula').value.trim();
+
+  // Validação com toast ao invés de alert
+  if (!nomeAula) {
+    toast('Preencha o nome do treinamento antes de gerar.', 'error');
+    document.getElementById('ai-nome-aula').focus();
+    return;
+  }
+  if (!objetivo) {
+    toast('Descreva o objetivo do treinamento para que a IA tenha contexto.', 'error');
+    document.getElementById('ai-objetivo-aula').focus();
+    return;
+  }
+
+  const btn      = document.getElementById('btn-gerar-ia');
+  const btnLabel = document.getElementById('btn-gerar-ia-label');
+  const btnCancelar = document.getElementById('btn-cancelar-ia');
+
+  // Estado: processando
+  btn.disabled       = true;
+  btnLabel.textContent = 'Gerando…';
+  btnCancelar.textContent = 'Fechar';
+  _iniciarCicloMensagens();
+
+  try {
+    const resposta = await fetch('/api/gerar-ia', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome_aula: nomeAula, objetivo: objetivo }),
+    });
+
+    _pararCicloMensagens();
+    const dados = await resposta.json();
+
+    if (resposta.ok && dados.status === 'sucesso') {
+      _setAiStatus(
+        'success', '🏆', 'Level Up!',
+        `Aura dominou este fluxo! Roteiro "${dados.arquivo || nomeAula}" gerado. Clique em "Abrir Roteiro" para conferir.`
+      );
+
+      btnLabel.textContent = 'Ver próximo passo';
+      btn.disabled         = false;
+      btn.onclick          = () => {
+        fecharModalGerarIA();
+        _abrirModalProximoPasso(dados.arquivo, nomeAula);
+        btn.onclick = () => gerarRoteiroIA();
+      };
+      carregarRoteiros();
+      carregarMetricas();
+      toast(`✨ Roteiro "${nomeAula}" gerado! Valide com HITL antes de gravar.`, 'info');
+
+    } else {
+      _setAiStatus('error', '⚠️', 'Erro ao gerar', dados.erro || 'Algo deu errado nos bastidores. Tente novamente.');
+      btnLabel.textContent = 'Tentar novamente';
+      btn.disabled         = false;
+      btn.onclick          = () => gerarRoteiroIA();
+    }
+
+  } catch (erro) {
+    _pararCicloMensagens();
+    _setAiStatus('error', '📡', 'Servidor offline', 'Não foi possível falar com o servidor. Verifique se o backend está rodando (python app.py).');
+    btnLabel.textContent = 'Tentar novamente';
+    btn.disabled         = false;
+    btn.onclick          = () => gerarRoteiroIA();
+  }
+}
+</script>
+<script>
+// FIX BUG-HTML-1: WebSocket agora controla a UI real (loading overlay, progress, toasts)
+// FIX BUG-HTML-7: Reconexão automática com exponential backoff
+(function() {
+  const protocolo = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const wsUrl = `${protocolo}//${window.location.host}/api/ws/status`;
+  let _ws = null;
+  let _reconectarDelay = 1000;
+  let _ocupadoAnterior = false;
+
+  function conectarWS() {
+    _ws = new WebSocket(wsUrl);
+
+    _ws.onopen = () => {
+      console.log('🟢 WebSocket conectado.');
+      _reconectarDelay = 1000; // reset backoff
+    };
+
+    _ws.onmessage = (event) => {
+      try {
+        const estado = JSON.parse(event.data);
+        const overlay   = document.getElementById('loading-overlay');
+        const loaderMsg = document.getElementById('loading-msg');
+        const loaderPct = document.getElementById('loader-pct');
+
+        if (estado.ocupado) {
+          // Mostra overlay de loading com mensagem gamificada
+          if (overlay) overlay.classList.add('visible');
+          // Detecta tipo de operação pela mensagem do backend p/ exibir copy certo
+          const msg = estado.mensagem || '';
+          let tipoOp = 'robo';
+          if (msg.includes('vídeo') || msg.includes('frame') || msg.includes('ilha'))     tipoOp = 'video';
+          else if (msg.includes('SCORM') || msg.includes('simulador'))                    tipoOp = 'scorm';
+          else if (msg.includes('PDF') || msg.includes('pergaminho') || msg.includes('E-book')) tipoOp = 'pdf';
+          else if (msg.includes('Aura') || msg.includes('Pinecone') || msg.includes('IA'))tipoOp = 'coach';
+          const titulos = { robo: '🤖 Robô em ação', video: '🎬 Renderizando', scorm: '📦 Gerando SCORM', pdf: '📜 Gerando PDF', coach: '🧠 Treinando a Aura' };
+          const titleEl = document.getElementById('loader-title-txt');
+          if (titleEl) titleEl.textContent = titulos[tipoOp] || '⚙️ Processando...';
+          if (loaderMsg) loaderMsg.textContent = msg || 'Trabalhando nos bastidores... 🎬';
+          if (loaderPct) {
+            loaderPct.textContent = estado.progresso != null ? estado.progresso + '%' : '';
+          }
+          _ocupadoAnterior = true;
+
+        } else {
+          // Esconde overlay
+          if (overlay) overlay.classList.remove('visible');
+          if (loaderPct) loaderPct.textContent = '';
+
+          if (_ocupadoAnterior) {
+            // Veio de um estado ocupado — recarrega dados
+            if (typeof carregarRoteiros   === 'function') carregarRoteiros();
+            if (typeof carregarMetricas   === 'function') carregarMetricas();
+          }
+          _ocupadoAnterior = false;
+
+          if (estado.sucesso) {
+            if (typeof toast === 'function') toast('✅ ' + estado.sucesso, 'success');
+            if (typeof limparStatus === 'function') limparStatus();
+          }
+          if (estado.erro) {
+            if (typeof toast === 'function') toast('❌ ' + estado.erro, 'error');
+            if (typeof limparStatus === 'function') limparStatus();
+          }
+        }
+      } catch (e) {
+        console.warn('WS parse error:', e);
+      }
+    };
+
+    _ws.onclose = () => {
+      console.warn(`🔴 WS desconectado. Reconectando em ${_reconectarDelay}ms…`);
+      setTimeout(() => {
+        _reconectarDelay = Math.min(_reconectarDelay * 2, 30000); // max 30s
+        conectarWS();
+      }, _reconectarDelay);
+    };
+
+    _ws.onerror = () => _ws.close();
+  }
+
+  document.addEventListener('DOMContentLoaded', conectarWS);
+})();
+
+let modalFila = null;
+
+function abrirModalFila() {
+    if(!modalFila) modalFila = new bootstrap.Modal(document.getElementById('modalFilaAulas'));
+    document.getElementById('textoFilaInput').value = '';
+    document.getElementById('statusFila').style.display = 'none';
+    document.getElementById('statusFila').innerHTML = '';
+    document.getElementById('btnIniciarFila').disabled = false;
+    modalFila.show();
+}
+
+function fecharModalFila() {
+    if(modalFila) modalFila.hide();
+    if(typeof carregarRoteiros === 'function') carregarRoteiros(); 
+}
+
+async function iniciarFilaGeracaoTexto() {
+    const textoRaw = document.getElementById('textoFilaInput').value;
+    const linhas = textoRaw.split('\n');
+    let listaAulas = [];
+    
+    // O Parser: Lê o texto humano e acha onde estão as aulas
+    for (let linha of linhas) {
+        linha = linha.trim();
+        if (!linha || !linha.toLowerCase().startsWith("aula")) continue;
+
+        // Esperamos o formato: "Aula 1.1: Titulo da Aula: Objetivo da aula"
+        let partes = linha.split(':');
+        if (partes.length >= 3) {
+            let idAula = partes[0].trim(); // ex: "Aula 1.1"
+            let titulo = partes[1].trim(); // ex: "Papéis e Permissões"
+            let objetivo = partes.slice(2).join(':').trim(); // Junta o resto pro caso de ter ":" no objetivo
+
+            listaAulas.push({
+                nome_aula: `${idAula} - ${titulo}`,
+                objetivo: objetivo
+            });
+        }
+    }
+
+    if (listaAulas.length === 0) {
+        alert("❌ Nenhuma aula encontrada! Certifique-se de colar o texto no formato 'Aula X.X: Título: Objetivo'.");
+        return;
+    }
+
+    // Inicia a UI da Fila
+    document.getElementById('btnIniciarFila').disabled = true;
+    const statusDiv = document.getElementById('statusFila');
+    statusDiv.style.display = 'block';
+    statusDiv.innerHTML = `<strong style="color: var(--cyan);">Lendo ementa... ${listaAulas.length} aulas identificadas!</strong><br><br>`;
+
+    // Executa a fila, um por um
+    for (let i = 0; i < listaAulas.length; i++) {
+        const aula = listaAulas[i];
+        const linhaStatus = document.createElement('div');
+        linhaStatus.style.marginBottom = "6px";
+        linhaStatus.innerHTML = `⏳ [${i+1}/${listaAulas.length}] Extraindo robô para: <b>${aula.nome_aula}</b>...`;
+        statusDiv.appendChild(linhaStatus);
+        statusDiv.scrollTop = statusDiv.scrollHeight;
+
+        try {
+            // Envia para a Aura gerar o JSON profundo nos bastidores
+            const response = await fetch('/api/gerar-ia', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    nome_aula: aula.nome_aula,
+                    objetivo: aula.objetivo
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.status === 'sucesso') {
+                linhaStatus.innerHTML = `✅ [${i+1}/${listaAulas.length}] <b>${aula.nome_aula}</b> -> Roteiro criado com sucesso!`;
+                linhaStatus.style.color = '#10b981'; // Verde sucesso
+            } else {
+                linhaStatus.innerHTML = `❌ [${i+1}/${listaAulas.length}] <b>${aula.nome_aula}</b> -> Falha: ${data.erro || 'Erro'}`;
+                linhaStatus.style.color = 'var(--amber)';
+            }
+        } catch (error) {
+            linhaStatus.innerHTML = `❌ [${i+1}/${listaAulas.length}] <b>${aula.nome_aula}</b> -> Erro de rede.`;
+            linhaStatus.style.color = '#ef4444';
+        }
+        
+        // Pausa de 3 segundos para respirar
+        await new Promise(r => setTimeout(r, 3000));
+    }
+
+    const fimMsg = document.createElement('div');
+    fimMsg.innerHTML = `<br>🎉 <strong>Automação Concluída!</strong> Suas aulas estão prontas no painel.`;
+    statusDiv.appendChild(fimMsg);
+    statusDiv.scrollTop = statusDiv.scrollHeight;
+}
+</script>
+</body>
+</html>

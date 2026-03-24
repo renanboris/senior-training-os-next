@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SeniorOS · VLA Engine</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230ea5e9'/><path d='M45 20 L30 55 L48 55 L45 80 L70 45 L52 45 Z' fill='%23fff'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #080e1a;
+    --bg2:     #0d1627;
+    --bg3:     #111e34;
+    --border:  rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --accent:  #0ea5e9;
+    --accent2: #0284c7;
+    --text:    #e2e8f0;
+    --muted:   #64748b;
+    --muted2:  #94a3b8;
+    --success: #22c55e;
+    --danger:  #ef4444;
+    --warn:    #f59e0b;
+    --radius:  12px;
+    --sidebar: 248px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    background: var(--bg); color: var(--text);
+    height: 100dvh; display: flex; overflow: hidden;
+    font-size: 15px; line-height: 1.6;
+  }
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 99px; }
+
+  /* ─── Sidebar ─────────────────────────────────── */
+  aside {
+    width: var(--sidebar); background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; flex-shrink: 0;
+  }
+  .logo {
+    height: 56px; display: flex; align-items: center;
+    gap: 10px; padding: 0 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo-dot {
+    width: 8px; height: 8px; background: var(--accent);
+    border-radius: 50%; animation: pulse 2s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  @keyframes pulse {
+    0%,100% { opacity:1; transform:scale(1); }
+    50%      { opacity:.4; transform:scale(.8); }
+  }
+  .logo-name { font-size: 15px; font-weight: 600; letter-spacing:.02em; }
+  .logo-name span { color: var(--accent); }
+
+  /* API status badge */
+  .api-badge {
+    margin-left: auto; display: flex; align-items: center; gap: 5px;
+    font-size: 10px; font-family: 'DM Mono', monospace;
+    color: var(--muted); letter-spacing: .04em;
+    background: var(--bg3); border: 1px solid var(--border);
+    padding: 3px 7px; border-radius: 99px;
+    cursor: default; user-select: none;
+    transition: all .3s;
+  }
+  .api-badge.online  { color: var(--success); border-color: rgba(34,197,94,.25); background: rgba(34,197,94,.06); }
+  .api-badge.offline { color: var(--danger);  border-color: rgba(239,68,68,.25);  background: rgba(239,68,68,.06);  }
+  .api-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+  .api-badge.online .api-dot { animation: pulse .8s ease-in-out infinite; }
+
+  .sidebar-actions {
+    padding: 12px; display: flex; flex-direction: column; gap: 7px;
+    border-bottom: 1px solid var(--border);
+  }
+  .btn-primary {
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    background: var(--accent); color: #fff; border: none;
+    border-radius: var(--radius); padding: 9px 14px;
+    font-size: 13px; font-weight: 500; cursor: pointer;
+    transition: background .15s; font-family: inherit; text-decoration: none;
+  }
+  .btn-primary:hover { background: var(--accent2); }
+  .btn-ghost {
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    background: transparent; color: var(--muted2);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 8px 14px; font-size: 13px; cursor: pointer;
+    transition: all .15s; font-family: inherit; text-decoration: none;
+  }
+  .btn-ghost:hover { color: var(--text); border-color: var(--border2); background: var(--bg3); }
+
+  .sidebar-history { flex: 1; overflow-y: auto; padding: 14px 10px 8px; }
+  .sidebar-label {
+    font-size: 10px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .1em; color: var(--muted); padding: 0 8px; margin-bottom: 8px;
+  }
+
+  /* History item with product tag */
+  .history-item {
+    display: flex; align-items: center; gap: 8px;
+    width: 100%; padding: 7px 9px; border-radius: 8px;
+    background: none; border: none; cursor: pointer;
+    transition: all .15s; font-family: inherit;
+    overflow: hidden; text-align: left;
+  }
+  .history-item:hover { background: var(--bg3); }
+  .history-item:hover .hi-title { color: var(--text); }
+  .hi-body { flex: 1; min-width: 0; }
+  .hi-title {
+    font-size: 12.5px; color: var(--muted2); white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; display: block;
+    transition: color .15s;
+  }
+  .hi-meta { display: flex; align-items: center; gap: 5px; margin-top: 2px; }
+  .hi-date { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; }
+  .hi-delete {
+    margin-left: auto; opacity: 0; background: none; border: none;
+    color: var(--muted); cursor: pointer; padding: 2px; border-radius: 4px;
+    transition: all .15s; flex-shrink: 0;
+  }
+  .history-item:hover .hi-delete { opacity: 1; }
+  .hi-delete:hover { color: var(--danger); background: rgba(239,68,68,.1); }
+
+  /* Product tag pill */
+  .tag {
+    font-size: 9px; font-weight: 600; padding: 2px 6px;
+    border-radius: 99px; letter-spacing: .05em; flex-shrink: 0;
+    text-transform: uppercase;
+  }
+  .tag-flow   { background: rgba(14,165,233,.15); color: #38bdf8; border: 1px solid rgba(14,165,233,.2); }
+  .tag-hcm    { background: rgba(34,197,94,.12);  color: #4ade80; border: 1px solid rgba(34,197,94,.2);  }
+  .tag-erpx    { background: rgba(245,158,11,.12); color: #fbbf24; border: 1px solid rgba(245,158,11,.2); }
+  .tag-outros { background: rgba(148,163,184,.1); color: #94a3b8; border: 1px solid rgba(148,163,184,.2); }
+
+  .sidebar-empty {
+    font-size: 12px; color: var(--muted); text-align: center;
+    padding: 20px 12px; line-height: 1.6;
+  }
+
+  .sidebar-user {
+    padding: 12px 14px; border-top: 1px solid var(--border);
+    display: flex; align-items: center; gap: 9px;
+    font-size: 13px; color: var(--muted2);
+  }
+  .avatar {
+    width: 28px; height: 28px; border-radius: 7px;
+    background: var(--bg3); display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600; color: var(--accent);
+    flex-shrink: 0; border: 1px solid var(--border);
+  }
+
+  /* ─── Main ────────────────────────────────────── */
+  main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+
+  #chat-container { flex: 1; overflow-y: auto; padding: 32px 24px 0; }
+  #chat-content {
+    max-width: 680px; margin: 0 auto;
+    display: flex; flex-direction: column; gap: 20px; padding-bottom: 8px;
+  }
+  #scroll-anchor { height: 1px; }
+
+  /* ─── Messages ────────────────────────────────── */
+  .msg { display: flex; gap: 12px; animation: msgIn .3s ease-out both; }
+  @keyframes msgIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+  .msg-agent { align-items: flex-start; }
+  .msg-user  { justify-content: flex-end; }
+
+  .agent-icon {
+    width: 32px; height: 32px; border-radius: 10px;
+    background: var(--bg3); border: 1px solid var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 2px; color: var(--accent);
+  }
+  .bubble-agent {
+    color: var(--text); font-size: 15px; line-height: 1.65;
+    max-width: 88%; padding-top: 4px;
+  }
+  .bubble-agent strong { color: #fff; font-weight: 500; }
+  .bubble-user {
+    background: var(--bg3); border: 1px solid var(--border2);
+    border-radius: 14px 14px 4px 14px;
+    padding: 10px 16px; font-size: 14px; color: var(--text); max-width: 72%;
+  }
+
+  /* ─── Chips ───────────────────────────────────── */
+  .chips {
+    display: flex; flex-wrap: wrap; gap: 8px; padding-left: 44px;
+    animation: msgIn .3s ease-out .1s both;
+  }
+  .chip {
+    background: var(--bg3); border: 1px solid var(--border2);
+    color: var(--muted2); border-radius: 99px; padding: 6px 14px;
+    font-size: 13px; cursor: pointer; transition: all .15s; font-family: inherit;
+  }
+  .chip:hover { color: var(--text); border-color: var(--accent); background: rgba(14,165,233,.08); }
+
+  /* ─── Typing ──────────────────────────────────── */
+  .typing-row { display: flex; gap: 12px; align-items: center; animation: msgIn .2s ease-out both; }
+  .typing-dots { display: flex; gap: 4px; padding-top: 2px; }
+  .dot { width: 6px; height: 6px; background: var(--muted); border-radius: 50%; animation: bounce 1.3s ease-in-out infinite; }
+  .dot:nth-child(2) { animation-delay: .15s; }
+  .dot:nth-child(3) { animation-delay: .3s; }
+  @keyframes bounce { 0%,80%,100%{transform:scale(.7);opacity:.5} 40%{transform:scale(1);opacity:1} }
+
+  /* ─── Card (confirmação) ──────────────────────── */
+  .card {
+    background: var(--bg3); border: 1px solid var(--border2);
+    border-radius: var(--radius); padding: 18px; font-size: 14px;
+  }
+  .card-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 8px 0; border-bottom: 1px solid var(--border); gap: 12px;
+  }
+  .card-row:last-of-type { border-bottom: none; }
+  .card-row label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .07em; flex-shrink: 0; }
+  .card-row span  { color: var(--text); font-weight: 500; text-align: right; }
+  .card-actions   { display: flex; gap: 8px; margin-top: 16px; }
+  .btn-confirm {
+    flex: 1; background: var(--accent); color: #fff; border: none;
+    border-radius: 8px; padding: 10px; font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: background .15s; font-family: inherit;
+  }
+  .btn-confirm:hover { background: var(--accent2); }
+  .btn-edit {
+    background: transparent; color: var(--muted2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 14px; font-size: 13px;
+    cursor: pointer; transition: all .15s; font-family: inherit;
+  }
+  .btn-edit:hover { color: var(--text); border-color: var(--border2); }
+
+  /* ─── Notice ──────────────────────────────────── */
+  .notice {
+    background: rgba(245,158,11,.07); border: 1px solid rgba(245,158,11,.22);
+    border-radius: 10px; padding: 11px 14px; font-size: 13px; color: #fbbf24;
+    display: flex; gap: 9px; align-items: flex-start;
+    animation: msgIn .3s ease-out both; margin-left: 44px;
+  }
+  .notice svg { flex-shrink: 0; margin-top: 1px; }
+
+  /* ─── Stepper ─────────────────────────────────── */
+  .stepper {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px 18px;
+    display: flex; flex-direction: column; gap: 13px;
+  }
+  .step {
+    display: flex; align-items: center; gap: 11px; font-size: 13px;
+    color: var(--muted); opacity: 0; transform: translateX(-10px);
+    transition: all .4s ease-out;
+  }
+  .step.visible { opacity: 1; transform: none; }
+  .step.done    { color: var(--text); }
+  .step.error   { color: var(--danger); }
+  .step-icon {
+    width: 20px; height: 20px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .step-icon.spinning {
+    border: 1.5px solid var(--accent); border-top-color: transparent;
+    animation: spin .8s linear infinite;
+  }
+  .step-icon.ok {
+    background: rgba(34,197,94,.12); border: 1.5px solid rgba(34,197,94,.35);
+    color: var(--success);
+  }
+  .step-icon.err {
+    background: rgba(239,68,68,.1); border: 1.5px solid rgba(239,68,68,.3);
+    color: var(--danger);
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ─── Deliverables ────────────────────────────── */
+  .deliverables {
+    background: var(--bg3); border: 1px solid var(--border2);
+    border-radius: var(--radius); padding: 18px;
+  }
+  .deliverables h3 { font-size: 14px; font-weight: 500; margin-bottom: 14px; }
+  .video-wrap {
+    border-radius: 9px; overflow: hidden; background: #000;
+    margin-bottom: 14px; aspect-ratio: 16/9;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--border);
+  }
+  .video-wrap video { width: 100%; height: 100%; object-fit: contain; }
+  .dl-row { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 14px; }
+  .dl-btn {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--bg); border: 1px solid var(--border2);
+    color: var(--muted2); border-radius: 8px; padding: 7px 13px;
+    font-size: 13px; text-decoration: none; transition: all .15s; font-family: inherit; cursor: pointer;
+  }
+  .dl-btn:hover { color: var(--text); border-color: var(--accent); }
+  .sep { height: 1px; background: var(--border); margin: 14px 0; }
+  .next-row { display: flex; gap: 7px; }
+  .btn-next {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
+    background: transparent; border: 1px solid var(--border2); color: var(--muted2);
+    border-radius: 8px; padding: 9px 12px; font-size: 13px;
+    cursor: pointer; transition: all .15s; text-decoration: none; font-family: inherit;
+  }
+  .btn-next:hover { color: var(--text); border-color: var(--accent); background: rgba(14,165,233,.06); }
+
+  /* ─── Input area ──────────────────────────────── */
+  .input-area { padding: 14px 24px 18px; flex-shrink: 0; }
+  .input-wrap { max-width: 680px; margin: 0 auto; }
+
+  /* Suggestions */
+  .suggestions {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;
+    animation: msgIn .25s ease-out both;
+  }
+  .suggestion {
+    background: var(--bg2); border: 1px solid var(--border);
+    color: var(--muted); border-radius: 8px; padding: 5px 11px;
+    font-size: 12px; cursor: pointer; transition: all .15s; font-family: inherit;
+  }
+  .suggestion:hover { color: var(--text); border-color: var(--border2); background: var(--bg3); }
+
+  .input-row {
+    display: flex; align-items: center; background: var(--bg2);
+    border: 1px solid var(--border2); border-radius: 12px;
+    padding: 4px 4px 4px 16px; transition: border-color .15s; gap: 7px;
+  }
+  .input-row:focus-within { border-color: var(--accent); }
+  .input-row input {
+    flex: 1; background: none; border: none; outline: none;
+    color: var(--text); font-size: 15px; font-family: inherit; padding: 8px 0;
+  }
+  .input-row input::placeholder { color: var(--muted); }
+  .send-btn {
+    width: 36px; height: 36px; border-radius: 8px; background: var(--accent);
+    border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    color: #fff; flex-shrink: 0; transition: background .15s;
+  }
+  .send-btn:hover { background: var(--accent2); }
+  .send-btn:disabled { opacity: .35; cursor: default; }
+
+  .input-footer {
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    margin-top: 7px;
+  }
+  .input-hint { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; }
+  .kbd {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 10px; font-family: 'DM Mono', monospace;
+    color: var(--muted); background: var(--bg3); border: 1px solid var(--border2);
+    padding: 1px 5px; border-radius: 4px;
+  }
+
+  @media (max-width: 640px) {
+    aside { display: none; }
+    #chat-container { padding: 20px 16px 0; }
+    .input-area { padding: 10px 16px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<aside>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    <div class="logo-name">Senior<span>OS</span></div>
+    <div class="api-badge" id="api-badge" title="Status da API local">
+      <div class="api-dot"></div>
+      <span id="api-label">...</span>
+    </div>
+  </div>
+
+  <div class="sidebar-actions">
+    <button class="btn-primary" onclick="newSession()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+      Nova sessão
+    </button>
+    <a href="/dashboard.html" class="btn-ghost">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </a>
+  </div>
+
+  <div class="sidebar-history">
+    <div class="sidebar-label">Sessões recentes</div>
+    <div id="history-list"></div>
+  </div>
+
+  <div class="sidebar-user">
+    <div class="avatar">RK</div>
+    <span>Renan Kirsch</span>
+  </div>
+</aside>
+
+<main>
+  <div id="chat-container">
+    <div id="chat-content"></div>
+    <div id="scroll-anchor"></div>
+  </div>
+
+  <div class="input-area">
+    <div class="input-wrap">
+      <div class="suggestions" id="suggestions" style="display:none"></div>
+      <form id="form" onsubmit="handleSubmit(event)">
+        <div class="input-row">
+          <input id="input" type="text" autocomplete="off"
+            placeholder="Descreva o que deseja construir..."
+            oninput="onInputChange()" onfocus="showSuggestionsIfEmpty()">
+          <button type="submit" class="send-btn" id="send-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+      </form>
+      <div class="input-footer">
+        <span class="input-hint">VLA Engine · API local</span>
+        <span class="kbd">Enter</span>
+        <span class="input-hint">enviar</span>
+        <span class="kbd">Esc</span>
+        <span class="input-hint">voltar</span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+'use strict';
+
+// ─── Configuração ──────────────────────────────────────────
+const API             = 'http://localhost:8000';
+const STORAGE_KEY     = 'seniorOS_sessions';
+const MAX_SESSIONS    = 20;
+const MAX_POLL        = 90; 
+
+// ─── Estado ────────────────────────────────────────────────
+let appState = 'IDLE';
+// 🟢 MUDANÇA: Adicionado arquivoJson no state
+let session  = { titulo: '', produto: '', objetivo: '', arquivoJson: '' };
+let apiOnline = false;
+
+// ─── Sanitização Inteligente ───────────────────────────────
+function formatarNomeArquivo(nome) {
+  return nome.normalize('NFD').replace(/[\u0300-\u036f]/g, "")
+             .replace(/[\\/*?:"<>|]/g, "") 
+             .replace(/ /g, "_")
+             .substring(0, 40)
+             .replace(/_+$/, "") + ".json";
+}
+
+// ─── Persistência ──────────────────────────────────────────
+function loadSessions() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+  catch { return []; }
+}
+
+function saveSession(sess) {
+  const sessions = loadSessions().filter(s => s.id !== sess.id);
+  sessions.unshift(sess);
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions.slice(0, MAX_SESSIONS)));
+  } catch {}
+}
+
+function deleteSession(id) {
+  const sessions = loadSessions().filter(s => s.id !== id);
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions)); }
+  catch {}
+  renderHistory();
+}
+
+function tagClass(produto) {
+  const p = (produto || '').toLowerCase();
+  if (p.includes('flow'))   return 'tag-flow';
+  if (p.includes('hcm'))    return 'tag-hcm';
+  if (p.includes('erpx'))    return 'tag-erp';
+  return 'tag-outros';
+}
+
+function tagLabel(produto) {
+  if (!produto) return '';
+  const p = produto.toLowerCase();
+  if (p.includes('flow')) return 'Flow';
+  if (p.includes('hcm'))  return 'HCM';
+  if (p.includes('erpx'))  return 'ERP X';
+  return produto.slice(0, 5);
+}
+
+function relativeDate(ts) {
+  const diff = (Date.now() - ts) / 1000;
+  if (diff < 60)    return 'agora';
+  if (diff < 3600)  return `${Math.floor(diff/60)}m`;
+  if (diff < 86400) return `${Math.floor(diff/3600)}h`;
+  return `${Math.floor(diff/86400)}d`;
+}
+
+function renderHistory() {
+  const list     = document.getElementById('history-list');
+  const sessions = loadSessions();
+
+  if (!sessions.length) {
+    list.innerHTML = `<div class="sidebar-empty">Nenhuma sessão ainda.<br>Crie a sua primeira aula.</div>`;
+    return;
+  }
+
+  list.innerHTML = sessions.map(s => `
+    <div class="history-item" role="button" tabindex="0">
+      <div class="hi-body" onclick="loadHistorySession('${s.id}')">
+        <span class="hi-title">${safe(s.titulo || 'Sem título')}</span>
+        <div class="hi-meta">
+          ${s.produto ? `<span class="tag ${tagClass(s.produto)}">${tagLabel(s.produto)}</span>` : ''}
+          <span class="hi-date">${relativeDate(s.ts)}</span>
+        </div>
+      </div>
+      <button class="hi-delete" onclick="deleteSession('${s.id}')" title="Remover">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+  `).join('');
+}
+
+function loadHistorySession(id) {
+  const sess = loadSessions().find(s => s.id === id);
+  if (!sess) return;
+  newSession();
+  setTimeout(() => {
+    addAgent(`Retomando: **${sess.titulo}**\n\nProduto: ${sess.produto}\nObjetivo: ${sess.objetivo}\n\nDeseja executar novamente ou criar uma nova versão?`);
+    session = { ...sess, arquivoJson: '' };
+    addChips([
+      { label: 'Executar novamente', action: 'retry_session' },
+      { label: 'Nova versão',        action: 'start_new' },
+    ]);
+  }, 100);
+}
+
+// ─── Sugestões contextuais ─────────────────────────────────
+function buildSuggestions() {
+  const sessions = loadSessions();
+  const base = [
+    'Criar aula de aprovação de férias no HCM',
+    'Mapear fluxo de emissão de nota fiscal no ERP',
+    'Documentar processo de integração no Senior Flow',
+  ];
+
+  const fromHistory = sessions
+    .filter(s => s.objetivo)
+    .slice(0, 2)
+    .map(s => s.objetivo);
+
+  return [...new Set([...fromHistory, ...base])].slice(0, 3);
+}
+
+function showSuggestionsIfEmpty() {
+  const el = document.getElementById('suggestions');
+  if (document.getElementById('input').value.trim()) return;
+  if (appState !== 'IDLE') { el.style.display = 'none'; return; }
+
+  const sugs = buildSuggestions();
+  el.innerHTML = sugs.map(s =>
+    `<button class="suggestion" onclick="useSuggestion('${safe(s)}')">${safe(s)}</button>`
+  ).join('');
+  el.style.display = 'flex';
+}
+
+function hideSuggestions() {
+  document.getElementById('suggestions').style.display = 'none';
+}
+
+function useSuggestion(text) {
+  const input = document.getElementById('input');
+  input.value = text;
+  input.focus();
+  hideSuggestions();
+}
+
+function onInputChange() {
+  const val = document.getElementById('input').value.trim();
+  if (val) hideSuggestions();
+}
+
+// ─── API status ────────────────────────────────────────────
+async function checkApiStatus() {
+  const badge = document.getElementById('api-badge');
+  const label = document.getElementById('api-label');
+  try {
+    const res = await fetch(`${API}/api/status`, { signal: AbortSignal.timeout(2500) });
+    if (res.ok) {
+      apiOnline = true;
+      badge.className = 'api-badge online';
+      label.textContent = 'online';
+      return;
+    }
+  } catch {}
+  apiOnline = false;
+  badge.className = 'api-badge offline';
+  label.textContent = 'offline';
+}
+
+// ─── Atalhos de teclado ────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (appState === 'CONFIRM' || appState === 'PRODUCT' || appState === 'OBJECTIVE') {
+      e.preventDefault();
+      addUser('← Voltar');
+      backState();
+    }
+    return;
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    const confirmBtn = document.querySelector('.btn-confirm');
+    if (confirmBtn) { e.preventDefault(); confirmBtn.click(); }
+  }
+});
+
+function backState() {
+  switch (appState) {
+    case 'PRODUCT':
+      appState = 'TITLE';
+      addAgent('Qual será o título desta aula?');
+      break;
+    case 'OBJECTIVE':
+      appState = 'PRODUCT';
+      addAgent('A qual produto esta aula pertence?');
+      addChips([
+        { label: 'Senior Flow', action: 'set_product' },
+        { label: 'HCM',         action: 'set_product' },
+        { label: 'ERP',         action: 'set_product' },
+        { label: 'WMS',         action: 'set_product' },
+        { label: 'CRM',         action: 'set_product' }
+      ]);
+      break;
+    case 'CONFIRM':
+      appState = 'OBJECTIVE';
+      addAgent('Qual é o objetivo desta aula?');
+      break;
+    default:
+      break;
+  }
+}
+
+// ─── Utilitários DOM ───────────────────────────────────────
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function safe(text) {
+  const d = document.createElement('div');
+  d.textContent = String(text);
+  return d.innerHTML;
+}
+
+function md(text) {
+  return safe(text)
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/`(.*?)`/g, `<code style="font-family:'DM Mono',monospace;font-size:12px;background:rgba(255,255,255,.07);padding:1px 5px;border-radius:4px">$1</code>`)
+    .replace(/\n/g, '<br>');
+}
+
+function scrollBottom() {
+  setTimeout(() => {
+    document.getElementById('scroll-anchor').scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }, 60);
+}
+
+function append(html) {
+  document.getElementById('chat-content').insertAdjacentHTML('beforeend', html);
+  scrollBottom();
+}
+
+// ─── Renderização ──────────────────────────────────────────
+function agentIcon() {
+  return `<div class="agent-icon">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>`;
+}
+
+function addAgent(text) {
+  append(`<div class="msg msg-agent">${agentIcon()}<div class="bubble-agent">${md(text)}</div></div>`);
+}
+
+function addUser(text) {
+  append(`<div class="msg msg-user"><div class="bubble-user">${safe(text)}</div></div>`);
+}
+
+// 🟢 MUDANÇA: O botão Chip agora aceita um payload invisível (nome do arquivo)
+function addChips(options) {
+  const btns = options.map(o => {
+    const payloadArg = o.payload ? `,'${safe(o.payload)}'` : '';
+    return `<button class="chip" onclick="chipClick('${o.action}','${safe(o.label)}'${payloadArg})">${safe(o.label)}</button>`;
+  }).join('');
+  append(`<div class="chips">${btns}</div>`);
+}
+
+function showTyping() {
+  append(`<div class="typing-row" id="typing">${agentIcon()}
+    <div class="typing-dots">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+  </div>`);
+}
+function removeTyping() {
+  const el = document.getElementById('typing');
+  if (el) el.remove();
+}
+
+function addNotice(text) {
+  append(`<div class="notice">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
+    </svg>
+    <span>${md(text)}</span>
+  </div>`);
+}
+
+function copyToClipboard(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.innerHTML;
+    btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg> Copiado`;
+    setTimeout(() => { btn.innerHTML = orig; }, 2000);
+  });
+}
+
+function addConfirmCard() {
+  append(`<div class="msg msg-agent" style="align-items:flex-start">
+    ${agentIcon()}
+    <div style="flex:1;max-width:88%">
+      <div class="card">
+        <div class="card-row"><label>Título</label><span>${safe(session.titulo)}</span></div>
+        <div class="card-row"><label>Produto</label><span>${safe(session.produto)}</span></div>
+        <div class="card-row"><label>Objetivo</label><span>${safe(session.objetivo)}</span></div>
+        <div class="card-actions">
+          <button class="btn-confirm" onclick="confirmarInicio()">
+            Confirmar e iniciar mapeamento
+          </button>
+          <button class="btn-edit" onclick="editarSessao()">Editar</button>
+        </div>
+        <div style="margin-top:10px;font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;text-align:right">
+          Ctrl+Enter para confirmar · Esc para editar
+        </div>
+      </div>
+    </div>
+  </div>`);
+}
+
+// ─── Stepper (A Linha de Produção Consertada) ───────────────
+const STEPS = [
+  { label: '🎬 Renderização do vídeo (MP4)',       endpoint: n => `/api/renderizar/${n}` },
+  { label: '📦 Geração do pacote SCORM',           endpoint: n => `/api/gerar-scorm/${n}` },
+  { label: '📜 Geração do documento PDF',          endpoint: n => `/api/gerar-pdf/${n}` },
+  { label: '🧠 Indexação na base de conhecimento', endpoint: n => `/api/ingest/${n}` },
+];
+
+function checkIcon(type) {
+  if (type === 'ok')  return `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>`;
+  if (type === 'err') return `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>`;
+  return '';
+}
+
+function setStepState(el, type) {
+  const icon = el.querySelector('.step-icon');
+  icon.className = `step-icon ${type}`;
+  icon.innerHTML = checkIcon(type);
+  el.classList.add(type === 'ok' ? 'done' : 'error');
+}
+
+async function runStepper(nomeArquivo) {
+  const id = 'step-' + Date.now();
+  append(`<div class="msg msg-agent" style="align-items:flex-start">
+    ${agentIcon()}
+    <div style="flex:1;max-width:88%">
+      <div class="stepper" id="${id}"></div>
+    </div>
+  </div>`);
+  const container = document.getElementById(id);
+
+  for (let i = 0; i < STEPS.length; i++) {
+    const s      = STEPS[i];
+    const stepId = `step-${id}-${i}`;
+
+    container.insertAdjacentHTML('beforeend', `
+      <div class="step" id="${stepId}">
+        <div class="step-icon spinning"></div>
+        <span>${safe(s.label)}</span>
+      </div>`);
+
+    const el = document.getElementById(stepId);
+    requestAnimationFrame(() => el.classList.add('visible'));
+    scrollBottom();
+
+    try {
+      await fetch(`${API}/api/limpar-status`, { method: 'POST' }).catch(() => {});
+      const res = await fetch(`${API}${s.endpoint(nomeArquivo)}`, { method: 'POST' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const result = await pollStatus();
+      if (!result.sucesso) {
+        setStepState(el, 'err');
+        return { sucesso: false, mensagem: result.mensagem };
+      }
+      setStepState(el, 'ok');
+    } catch (e) {
+      setStepState(el, 'err');
+      return { sucesso: false, mensagem: e.message };
+    }
+  }
+
+  container.insertAdjacentHTML('beforeend', `
+    <div class="step visible done" style="font-weight:500;color:var(--success)">
+      <div class="step-icon ok">${checkIcon('ok')}</div>
+      <span>Produção concluída</span>
+    </div>`);
+  scrollBottom();
+  return { sucesso: true };
+}
+
+async function addDeliverables(arquivoJson) {
+  let baseName = arquivoJson.replace('.json', '');
+  
+  try {
+    const res = await fetch(`${API}/api/roteiros/${arquivoJson}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.metadata && data.metadata.id_treinamento) {
+        baseName = formatarNomeArquivo(data.metadata.id_treinamento).replace('.json', '');
+      }
+    }
+  } catch (e) {}
+
+  const video = `${API}/videos/${baseName}.mp4`;
+  const pdf   = `${API}/api/download-pdf/${baseName}`;
+  const scorm = `${API}/api/download-scorm/${baseName}`;
+  const link  = `${window.location.origin}/videos/${baseName}.mp4`;
+
+  append(`<div class="msg msg-agent" style="align-items:flex-start">
+    ${agentIcon()}
+    <div style="flex:1;max-width:88%">
+      <div class="deliverables">
+        <h3>Materiais de <strong>${safe(session.titulo)}</strong></h3>
+        <div class="video-wrap">
+          <video controls>
+            <source src="${video}" type="video/mp4">
+            Vídeo indisponível.
+          </video>
+        </div>
+        <div class="dl-row">
+          <a href="${pdf}"   target="_blank" class="dl-btn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            PDF
+          </a>
+          <a href="${scorm}" target="_blank" class="dl-btn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            SCORM
+          </a>
+          <button class="dl-btn" onclick="copyToClipboard('${link}', this)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copiar link
+          </button>
+        </div>
+        <div class="sep"></div>
+        <div class="next-row">
+          <a href="/dashboard.html" class="btn-next">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg>
+            Refinar
+          </a>
+          <button class="btn-next" onclick="newSession()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            Nova sessão
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>`);
+  scrollBottom();
+}
+
+// ─── Polling ───────────────────────────────────────────────
+async function pollStatus() {
+  for (let i = 0; i < MAX_POLL; i++) {
+    await sleep(2000);
+    try {
+      const res  = await fetch(`${API}/api/status`);
+      const data = await res.json();
+      if (!data.ocupado) return { sucesso: !data.erro, mensagem: data.erro || data.sucesso || '' };
+    } catch {}
+  }
+  return { sucesso: false, mensagem: 'Tempo esgotado. O processo excedeu 3 minutos.' };
+}
+
+// ─── Input control ─────────────────────────────────────────
+function setInputEnabled(on) {
+  const inp = document.getElementById('input');
+  const btn = document.getElementById('send-btn');
+  inp.disabled = !on;
+  btn.disabled = !on;
+  inp.placeholder = on ? 'Descreva o que deseja construir...' : 'Aguardando o processo...';
+}
+
+// ─── Fluxo principal ───────────────────────────────────────
+window.onload = () => {
+  renderHistory();
+  checkApiStatus();
+  setInterval(checkApiStatus, 15000);
+
+  addAgent('Olá, Renan. O que vamos construir hoje?');
+  // 🟢 MUDANÇA: Novo botão para Carregar Existentes
+  addChips([
+    { label: 'Construir nova aula',           action: 'start_new' },
+    { label: 'Gerar vídeo de aula existente', action: 'load_existing' },
+  ]);
+  document.getElementById('input').focus();
+};
+
+function handleSubmit(e) {
+  e.preventDefault();
+  const text = document.getElementById('input').value.trim();
+  if (!text || document.getElementById('send-btn').disabled) return;
+  document.getElementById('input').value = '';
+  hideSuggestions();
+  addUser(text);
+  processInput(text);
+}
+
+async function processInput(text) {
+  showTyping(); await sleep(480); removeTyping();
+
+  switch (appState) {
+    case 'IDLE':
+      if (/nova|aula|criar|construir/i.test(text)) { chipClick('start_new'); }
+      else { addAgent('Selecione uma opção acima para começarmos.'); }
+      break;
+    case 'TITLE':
+      session.titulo = text;
+      appState = 'PRODUCT';
+      addAgent('Ótimo. A qual produto esta aula pertence?');
+      addChips([
+        { label: 'Senior Flow', action: 'set_product' },
+        { label: 'HCM',         action: 'set_product' },
+        { label: 'ERP',         action: 'set_product' },
+        { label: 'WMS',         action: 'set_product' },
+        { label: 'CRM',         action: 'set_product' }
+      ]);
+      break;
+    case 'OBJECTIVE':
+      session.objetivo = text;
+      appState = 'CONFIRM';
+      addAgent('Revise os dados antes de iniciar:');
+      addConfirmCard();
+      break;
+    default:
+      break;
+  }
+}
+
+// 🟢 MUDANÇA: Nova lógica para buscar roteiros já prontos
+async function carregarRoteirosExistentes() {
+  try {
+    const res = await fetch(`${API}/api/roteiros`);
+    if (!res.ok) throw new Error('Falha');
+    const roteiros = await res.json();
+    
+    removeTyping();
+    if (roteiros.length === 0) {
+      addAgent('Não encontrei nenhuma aula salva na base de dados.');
+      addChips([{ label: 'Construir nova aula', action: 'start_new' }]);
+      return;
+    }
+
+    addAgent('Aqui estão as aulas recentes salvas no sistema. Qual deseja produzir?');
+    // Mapeia até as 10 últimas aulas para exibição
+    const options = roteiros.slice(0, 10).map(r => ({
+      label: r.nome,
+      action: 'select_existing',
+      payload: r.arquivo
+    }));
+    addChips(options);
+
+  } catch(e) {
+    removeTyping();
+    addAgent('⚠️ Erro ao buscar os roteiros na API local.');
+  }
+}
+
+// 🟢 MUDANÇA: Novo parâmetro payload
+function chipClick(action, label = '', payload = '') {
+  if(event && event.target && event.target.parentElement) {
+    event.target.parentElement.style.display = 'none';
+  }
+
+  // Aciona a busca de roteiros
+  if (action === 'load_existing') {
+    addUser(label);
+    appState = 'LOADING_EXISTING';
+    showTyping();
+    carregarRoteirosExistentes();
+    return;
+  }
+
+  // Quando o utilizador escolhe uma aula da lista
+  if (action === 'select_existing') {
+    addUser(label);
+    session.titulo = label;
+    session.arquivoJson = payload; // Guarda o nome do arquivo REAL
+    appState = 'READY_EXISTING';
+    showTyping();
+    setTimeout(() => {
+      removeTyping();
+      addAgent(`O roteiro **${label}** foi carregado da base de dados. O que deseja fazer com ele?`);
+      addChips([
+        { label: '🤖 Iniciar Gravação (Robô)', action: 'start_robo' },
+        { label: '🚀 Iniciar Produção Direta', action: 'start_factory' }
+      ]);
+    }, 500);
+    return;
+  }
+
+  if (action === 'unsupported') {
+    if (label) addUser(label);
+    showTyping();
+    setTimeout(() => { removeTyping(); addAgent('Esta funcionalidade estará disponível em breve.'); }, 500);
+    return;
+  }
+  if (action === 'start_new') {
+    if (!label) addUser('Construir nova aula');
+    appState = 'TITLE';
+    showTyping(); setTimeout(() => { removeTyping(); addAgent('Qual será o título desta aula?'); }, 500);
+    return;
+  }
+  if (action === 'set_product') {
+    addUser(label); session.produto = label; appState = 'OBJECTIVE';
+    showTyping(); setTimeout(() => { removeTyping(); addAgent('Qual é o objetivo desta aula? Descreva o que o usuário aprenderá a fazer.'); }, 500);
+    return;
+  }
+  if (action === 'retry_session') {
+    addUser('Executar novamente');
+    appState = 'CONFIRM';
+    addConfirmCard();
+    return;
+  }
+  if (chipHandlers[action]) {
+    if (label) addUser(label);
+    chipHandlers[action]();
+  }
+}
+window.chipClick = chipClick;
+
+function editarSessao() {
+  session = { titulo: '', produto: '', objetivo: '', arquivoJson: '' };
+  appState = 'TITLE';
+  addAgent('Tudo bem, vamos recomeçar. Qual será o título?');
+}
+
+// ─── TRAVA 1: Mapeamento ──────────────────────────────────
+async function confirmarInicio() {
+  document.querySelectorAll('.card').forEach(c => c.closest('.msg')?.remove());
+  addUser('Confirmar e iniciar mapeamento');
+  appState = 'RUNNING';
+  setInputEnabled(false);
+
+  const sessId = 'sess_' + Date.now();
+  session.id = sessId;
+  session.ts = Date.now();
+  saveSession({ ...session });
+  renderHistory();
+
+  if (!apiOnline) {
+    addNotice('A API local está offline (porta 8000). Verifique se o servidor está a correr.');
+    setInputEnabled(true);
+    appState = 'CONFIRM';
+    return;
+  }
+
+  addNotice('Uma janela do browser será aberta para o agente mapear o fluxo. **Não a feche** — isso é normal.');
+  await sleep(700);
+  showTyping();
+
+  try {
+    await fetch(`${API}/api/limpar-status`, { method: 'POST' }).catch(() => {});
+    
+    const tituloCompleto = `${session.produto} - ${session.titulo}`;
+
+    const res = await fetch(`${API}/api/gravar`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome_aula: tituloCompleto, objetivo: session.objetivo }),
+    });
+    if (!res.ok) throw new Error('A API rejeitou o comando de gravação.');
+
+    const result = await pollStatus();
+    removeTyping();
+
+    if (!result.sucesso) {
+      addAgent(`Problema no mapeamento:\n\`${result.mensagem}\`\n\nDeseja tentar novamente?`);
+      addChips([{ label: 'Tentar novamente', action: 'retry_session' }]);
+      setInputEnabled(true);
+      return;
+    }
+
+    addAgent('Mapeamento concluído com sucesso! O próximo passo é colocar o Robô Ator para testar esse roteiro e gravar a tela e as locuções oficiais.');
+    addChips([{ label: '🤖 Iniciar Gravação (Robô)', action: 'start_robo' }]);
+
+  } catch (e) {
+    removeTyping();
+    addAgent(`Erro ao conectar à API:\n\`${e.message}\``);
+    setInputEnabled(true);
+    appState = 'CONFIRM';
+  }
+}
+
+// ─── TRAVA 2: Execução do Robô ────────────────────────────
+async function iniciarRobo() {
+  addUser('Iniciar Gravação (Robô)');
+  appState = 'ROBO';
+  setInputEnabled(false);
+  
+  addNotice('A acordar o motor cinemático. **Por favor, solte o rato.** O robô vai assumir o controlo da sua máquina em 3 segundos.');
+  await sleep(700);
+  showTyping();
+
+  try {
+    // 🟢 MUDANÇA: Usa o ficheiro carregado ou constrói o nome novo
+    const arquivoJson = session.arquivoJson || formatarNomeArquivo(`${session.produto} - ${session.titulo}`);
+
+    await fetch(`${API}/api/limpar-status`, { method: 'POST' }).catch(() => {});
+    const res = await fetch(`${API}/api/executar-robo/${arquivoJson}`, { method: 'POST' });
+    
+    if (!res.ok) throw new Error('Falha ao acionar o endpoint do Robô.');
+
+    const result = await pollStatus();
+    removeTyping();
+
+    if (!result.sucesso) {
+      addAgent(`⚠️ A execução do robô falhou no meio do processo:\n\`${result.mensagem}\``);
+      addChips([{ label: '🤖 Tentar Robô Novamente', action: 'start_robo' }]);
+      setInputEnabled(true);
+      return;
+    }
+
+    addAgent('Gravação visual e locuções concluídas perfeitamente! As peças brutas estão criadas.\nPosso ligar a linha de montagem final para renderizar todos os materiais?');
+    addChips([{ label: '🚀 Iniciar Produção', action: 'start_factory' }]);
+
+  } catch (e) {
+    removeTyping();
+    addAgent(`Erro ao comunicar com a API do Robô:\n\`${e.message}\``);
+    setInputEnabled(true);
+  }
+}
+
+// ─── TRAVA 3: Linha de Produção ────────────────────────────
+async function iniciarProducao() {
+  addUser('Iniciar produção');
+  appState = 'FACTORY';
+  setInputEnabled(false);
+  addAgent('A linha de produção final foi acionada. Acompanhe os pacotes a serem montados:');
+  await sleep(300);
+
+  // 🟢 MUDANÇA: Usa o ficheiro carregado ou constrói o nome novo
+  const arquivoJson = session.arquivoJson || formatarNomeArquivo(`${session.produto} - ${session.titulo}`);
+
+  const result  = await runStepper(arquivoJson);
+
+  if (!result.sucesso) {
+    addAgent(`A produção foi interrompida:\n\`${result.mensagem}\``);
+    addChips([{ label: '🔄 Tentar novamente', action: 'start_factory' }]);
+    setInputEnabled(true);
+    return;
+  }
+
+  await sleep(500);
+  addDeliverables(arquivoJson);
+  appState = 'DONE';
+  setInputEnabled(true);
+}
+
+const chipHandlers = {
+  start_robo:     iniciarRobo,
+  start_factory:  iniciarProducao,
+  retry_mapping:  confirmarInicio,
+  retry_session:  () => { appState = 'CONFIRM'; addConfirmCard(); },
+};
+
+function newSession() {
+  session  = { titulo: '', produto: '', objetivo: '', arquivoJson: '' };
+  appState = 'IDLE';
+  document.getElementById('chat-content').innerHTML = '';
+  setInputEnabled(true);
+  hideSuggestions();
+  addAgent('Olá, Renan. O que vamos construir hoje?');
+  addChips([
+    { label: 'Construir nova aula',           action: 'start_new' },
+    { label: 'Gerar vídeo de aula existente', action: 'load_existing' }, // 🟢 Nova ação de carregar 
+  ]);
+  document.getElementById('input').focus();
+}
+
+window.newSession = newSession;
+</script>
+</body>
+</html>
