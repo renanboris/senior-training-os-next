@@ -54,7 +54,10 @@ class ScreenObserver:
             """
         )
 
-        hints = [VisibleElementHint(**item) for item in raw_hints]
+        if not isinstance(raw_hints, list):
+            raw_hints = []
+
+        hints = [VisibleElementHint(**item) for item in raw_hints if isinstance(item, dict)]
         fingerprint = self._build_fingerprint(url, title, modal_open, hints)
 
         return ScreenState(
