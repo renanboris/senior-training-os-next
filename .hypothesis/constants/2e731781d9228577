@@ -1,0 +1,4 @@
+# file: C:\TrainingOS\contracts\observed_action.py
+# hypothesis_version: 6.151.10
+
+[0.5, 'accordion_collapse', 'accordion_expand', 'checkbox_toggle', 'click', 'double_click', 'field_update', 'grid_refresh', 'high', 'hover', 'keypress', 'low', 'medium', 'modal_close', 'modal_open', 'navigation', 'none', 'select_option', 'toast', 'type', 'type_and_enter', 'upload']

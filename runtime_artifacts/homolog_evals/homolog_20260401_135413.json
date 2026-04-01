@@ -1,0 +1,188 @@
+{
+  "shadow_file": "shadow_exports\\TESTE_DUAL_002_shadow.jsonl",
+  "records": [
+    {
+      "event_id": "shadow_4",
+      "step": 1,
+      "intent": {
+        "intent_id": "int_454a655b6701",
+        "source_event_id": "shadow_4",
+        "goal_type": "navigate",
+        "business_entity": null,
+        "semantic_target": "Financeiro",
+        "ui_context": null,
+        "expected_effect": {
+          "effect_type": "screen_change",
+          "description": "Algum efeito visível deve ocorrer após a ação.",
+          "verification_hint": null
+        },
+        "pedagogical_value": "Ensina como navigate relacionado a registro usando o alvo 'Financeiro'.",
+        "semantic_confidence": 0.8,
+        "reasoning_trace": [
+          "action_type=double_click",
+          "goal_type=navigate",
+          "semantic_target=Financeiro"
+        ]
+      },
+      "risk": {
+        "risk_level": "low",
+        "needs_confirmation": false,
+        "allow_coordinate_fallback": true,
+        "require_post_validation": false
+      },
+      "resolved": {
+        "resolution_id": "res_6d0030d1250d",
+        "intent_id": "int_454a655b6701",
+        "strategy_used": "active_element",
+        "resolved_target": {
+          "selector": null,
+          "iframe": null,
+          "coords_rel": null,
+          "active_element": true
+        },
+        "resolution_confidence": 0.72,
+        "evidence": {
+          "matched_label": "Logotipo da empresa",
+          "matched_role": "a",
+          "matched_text": null,
+          "screen_fingerprint": "https://platform-homologx.senior.com.br/tecnologia/platform/senior-x/::senior | plataforma de solucao::modal=1::::logotipo da empresa|ir para conteudo|menu mobile|menu de contexto|menu principal dados",
+          "frame_path": null
+        },
+        "fallback_chain": [
+          "cache_miss",
+          "active_element_success"
+        ],
+        "needs_extra_validation": false
+      },
+      "resolution_ok": true,
+      "trace": [
+        "Tentando strategy: active_element",
+        "Strategy vencedora: active_element (confidence=0.72)"
+      ],
+      "skills_matched": 0,
+      "screen_fp": "https://platform-homologx.senior.com.br/tecnologia/platform/senior-x/::senior | plataforma de solucao::modal=1::::logotipo da empresa|ir para conteudo|menu mobile|menu de contexto|menu principal dados"
+    },
+    {
+      "event_id": "shadow_5",
+      "step": 2,
+      "intent": {
+        "intent_id": "int_b1ddc837b44d",
+        "source_event_id": "shadow_5",
+        "goal_type": "navigate",
+        "business_entity": null,
+        "semantic_target": "Contas a receber01.pdf",
+        "ui_context": null,
+        "expected_effect": {
+          "effect_type": "screen_change",
+          "description": "Algum efeito visível deve ocorrer após a ação.",
+          "verification_hint": null
+        },
+        "pedagogical_value": "Ensina como navigate relacionado a registro usando o alvo 'Contas a receber01.pdf'.",
+        "semantic_confidence": 0.8,
+        "reasoning_trace": [
+          "action_type=click",
+          "goal_type=navigate",
+          "semantic_target=Contas a receber01.pdf"
+        ]
+      },
+      "risk": {
+        "risk_level": "low",
+        "needs_confirmation": false,
+        "allow_coordinate_fallback": true,
+        "require_post_validation": false
+      },
+      "resolved": {
+        "resolution_id": "res_6e24a6bae5a4",
+        "intent_id": "int_b1ddc837b44d",
+        "strategy_used": "active_element",
+        "resolved_target": {
+          "selector": null,
+          "iframe": null,
+          "coords_rel": null,
+          "active_element": true
+        },
+        "resolution_confidence": 0.72,
+        "evidence": {
+          "matched_label": "Logotipo da empresa",
+          "matched_role": "a",
+          "matched_text": null,
+          "screen_fingerprint": "https://platform-homologx.senior.com.br/tecnologia/platform/senior-x/::senior | plataforma de solucao::modal=1::::logotipo da empresa|ir para conteudo|menu mobile|menu de contexto|menu principal dados",
+          "frame_path": null
+        },
+        "fallback_chain": [
+          "cache_miss",
+          "active_element_success"
+        ],
+        "needs_extra_validation": false
+      },
+      "resolution_ok": true,
+      "trace": [
+        "Tentando strategy: active_element",
+        "Strategy vencedora: active_element (confidence=0.72)"
+      ],
+      "skills_matched": 0,
+      "screen_fp": "https://platform-homologx.senior.com.br/tecnologia/platform/senior-x/::senior | plataforma de solucao::modal=1::::logotipo da empresa|ir para conteudo|menu mobile|menu de contexto|menu principal dados"
+    },
+    {
+      "event_id": "shadow_6",
+      "step": 3,
+      "intent": {
+        "intent_id": "int_39c126d8a4fc",
+        "source_event_id": "shadow_6",
+        "goal_type": "navigate",
+        "business_entity": null,
+        "semantic_target": "Coletar assinaturas",
+        "ui_context": null,
+        "expected_effect": {
+          "effect_type": "screen_change",
+          "description": "Algum efeito visível deve ocorrer após a ação.",
+          "verification_hint": null
+        },
+        "pedagogical_value": "Ensina como navigate relacionado a registro usando o alvo 'Coletar assinaturas'.",
+        "semantic_confidence": 0.6,
+        "reasoning_trace": [
+          "action_type=click",
+          "goal_type=navigate",
+          "semantic_target=Coletar assinaturas"
+        ]
+      },
+      "risk": {
+        "risk_level": "low",
+        "needs_confirmation": false,
+        "allow_coordinate_fallback": true,
+        "require_post_validation": false
+      },
+      "resolved": {
+        "resolution_id": "res_b41ce58de3ae",
+        "intent_id": "int_39c126d8a4fc",
+        "strategy_used": "active_element",
+        "resolved_target": {
+          "selector": null,
+          "iframe": null,
+          "coords_rel": null,
+          "active_element": true
+        },
+        "resolution_confidence": 0.72,
+        "evidence": {
+          "matched_label": "Logotipo da empresa",
+          "matched_role": "a",
+          "matched_text": null,
+          "screen_fingerprint": "https://platform-homologx.senior.com.br/tecnologia/platform/senior-x/::senior | plataforma de solucao::modal=1::::logotipo da empresa|ir para conteudo|menu mobile|menu de contexto|menu principal dados",
+          "frame_path": null
+        },
+        "fallback_chain": [
+          "cache_miss",
+          "active_element_success"
+        ],
+        "needs_extra_validation": false
+      },
+      "resolution_ok": true,
+      "trace": [
+        "Tentando strategy: active_element",
+        "Strategy vencedora: active_element (confidence=0.72)"
+      ],
+      "skills_matched": 0,
+      "screen_fp": "https://platform-homologx.senior.com.br/tecnologia/platform/senior-x/::senior | plataforma de solucao::modal=1::::logotipo da empresa|ir para conteudo|menu mobile|menu de contexto|menu principal dados"
+    }
+  ]
+}

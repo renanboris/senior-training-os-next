@@ -1,0 +1,4 @@
+# file: C:\TrainingOS\orchestration\offline_pipeline.py
+# hypothesis_version: 6.151.10
+
+[0.5, '__main__', 'confidence', 'skills_discarded', 'skills_generated', 'total_events', 'useful_events']

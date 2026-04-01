@@ -1,0 +1,4 @@
+# file: C:\TrainingOS\capture\event_normalizer.py
+# hypothesis_version: 6.151.10
+
+[0.05, 0.5, 'action_type', 'aria_label', 'artifacts', 'bbox', 'capture_confidence', 'coords_rel', 'event_id', 'h', 'h_pct', 'iframe_hint', 'low', 'name', 'risk_class', 'role', 'screen_after', 'screen_before', 'selector', 'state_change', 'tag', 'text', 'timestamp', 'typed_value', 'w', 'w_pct', 'x', 'x_pct', 'y', 'y_pct']

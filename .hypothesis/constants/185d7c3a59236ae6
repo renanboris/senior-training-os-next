@@ -1,0 +1,4 @@
+# file: C:\TrainingOS\cil\interpreter.py
+# hypothesis_version: 6.151.10
+
+[0.05, 0.1, 0.15, 0.2, 0.45, 0.8, 0.98, 'abrir', 'apagar', 'buscar', 'business_entity', 'confirm', 'confirmar', 'delete', 'description', 'detalhar', 'effect_type', 'excluir', 'expected_effect', 'field_filled', 'fill', 'filtrar', 'goal_type', 'gravar', 'grid_refresh', 'llm_interpretation', 'modal_close', 'modal_open', 'navigate', 'navigation', 'open', 'pesquisar', 'procurar', 'registro', 'remover', 'salvar', 'save', 'screen_change', 'search', 'type', 'type_and_enter', 'visualizar']

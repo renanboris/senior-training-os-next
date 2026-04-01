@@ -20,3 +20,4 @@ class FeatureFlags:
     use_cil_low_risk_prod: bool = _flag("USE_CIL_LOW_RISK_PROD", False)
     use_cil_medium_risk_prod: bool = _flag("USE_CIL_MEDIUM_RISK_PROD", False)
     use_cil_high_risk_prod: bool = _flag("USE_CIL_HIGH_RISK_PROD", False)
+    use_llm_interpretation: bool = _flag("USE_LLM_INTERPRETATION", False)

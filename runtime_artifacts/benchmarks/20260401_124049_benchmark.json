@@ -1,0 +1,39 @@
+{
+  "timestamp": "2026-04-01T12:40:49.579375+00:00",
+  "total_cases": 4,
+  "passed": 4,
+  "failed": 0,
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1_score": 1.0,
+  "cases": [
+    {
+      "case_objective": "obj_0",
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "passed": true
+    },
+    {
+      "case_objective": "obj_1",
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "passed": true
+    },
+    {
+      "case_objective": "obj_2",
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "passed": true
+    },
+    {
+      "case_objective": "obj_3",
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "passed": true
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+# file: C:\TrainingOS\orchestration\evaluation_logger.py
+# hypothesis_version: 6.151.10
+
+[0.0, 0.95, '%Y-%m-%d', 'a', 'avg_duration_ms', 'duration_ms', 'effect_verified', 'effect_verified_rate', 'execution_result', 'metric', 'p95_duration_ms', 'resolved_target', 'status', 'strategy_used', 'success', 'success_rate', 'total_executions', 'utf-8', 'value', 'w']

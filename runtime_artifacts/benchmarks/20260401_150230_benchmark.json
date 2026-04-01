@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-04-01T15:02:30.074377+00:00",
+  "total_cases": 1,
+  "passed": 1,
+  "failed": 0,
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1_score": 1.0,
+  "cases": [
+    {
+      "case_objective": "obj_0",
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "passed": true
+    }
+  ]
+}

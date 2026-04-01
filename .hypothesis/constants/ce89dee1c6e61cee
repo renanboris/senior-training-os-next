@@ -1,0 +1,4 @@
+# file: C:\TrainingOS\scripts\run_tutorial.py
+# hypothesis_version: 6.151.10
+
+[1.0, 1.5, '"', '#', "'", '--guide', '--headless', '--max-events', '--min-step-duration', '--record-only', '--replay', '--speed-factor', '.env', '=', 'FLOAT', 'INT', '__main__', 'data', 'guide', 'homolog', 'record-only', 'record_only', 'replay', 'run_tutorial', 'shadow_file', 'skills.jsonl', 'store_true', 'utf-8']

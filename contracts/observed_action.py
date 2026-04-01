@@ -60,6 +60,8 @@ class ScreenSnapshot(BaseModel):
     sidebar_active: Optional[str] = None
     modal_open: bool = False
     frame_count: int = 0
+    grid_row_count: int = 0
+    toast_present: bool = False
 
 
 class ObservedAction(BaseModel):

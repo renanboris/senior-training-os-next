@@ -1,0 +1,4 @@
+# file: C:\TrainingOS\orchestration\comparison_report.py
+# hypothesis_version: 6.151.10
+
+['acao_tec', 'alvo', 'descricao', 'goal_type', 'semantic_target', 'success', 'tipo']

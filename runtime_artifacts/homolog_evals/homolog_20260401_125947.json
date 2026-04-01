@@ -1,0 +1,190 @@
+{
+  "shadow_file": "shadow_exports\\TESTE_DUAL_002_shadow.jsonl",
+  "records": [
+    {
+      "event_id": "shadow_4",
+      "step": 1,
+      "intent": {
+        "intent_id": "int_51e73d2fb4bc",
+        "source_event_id": "shadow_4",
+        "goal_type": "navigate",
+        "business_entity": "documento",
+        "semantic_target": "Financeiro",
+        "ui_context": "ged",
+        "expected_effect": {
+          "effect_type": "screen_change",
+          "description": "Algum efeito visível deve ocorrer após a ação.",
+          "verification_hint": null
+        },
+        "pedagogical_value": "Ensina como navigate relacionado a documento usando o alvo 'Financeiro'.",
+        "semantic_confidence": 0.8500000000000001,
+        "reasoning_trace": [
+          "action_type=double_click",
+          "goal_type=navigate",
+          "semantic_target=Financeiro",
+          "ui_context=ged"
+        ]
+      },
+      "risk": {
+        "risk_level": "low",
+        "needs_confirmation": false,
+        "allow_coordinate_fallback": true,
+        "require_post_validation": false
+      },
+      "resolved": null,
+      "resolution_ok": false,
+      "trace": [
+        "all_strategies_failed"
+      ],
+      "skills_matched": 0
+    },
+    {
+      "event_id": "shadow_5",
+      "step": 2,
+      "intent": {
+        "intent_id": "int_64348588f43f",
+        "source_event_id": "shadow_5",
+        "goal_type": "navigate",
+        "business_entity": "documento",
+        "semantic_target": "Contas a receber01.pdf",
+        "ui_context": "ged",
+        "expected_effect": {
+          "effect_type": "screen_change",
+          "description": "Algum efeito visível deve ocorrer após a ação.",
+          "verification_hint": null
+        },
+        "pedagogical_value": "Ensina como navigate relacionado a documento usando o alvo 'Contas a receber01.pdf'.",
+        "semantic_confidence": 0.8500000000000001,
+        "reasoning_trace": [
+          "action_type=click",
+          "goal_type=navigate",
+          "semantic_target=Contas a receber01.pdf",
+          "ui_context=ged"
+        ]
+      },
+      "risk": {
+        "risk_level": "low",
+        "needs_confirmation": false,
+        "allow_coordinate_fallback": true,
+        "require_post_validation": false
+      },
+      "resolved": null,
+      "resolution_ok": false,
+      "trace": [
+        "all_strategies_failed"
+      ],
+      "skills_matched": 0
+    },
+    {
+      "event_id": "shadow_6",
+      "step": 3,
+      "intent": {
+        "intent_id": "int_dd38464436fe",
+        "source_event_id": "shadow_6",
+        "goal_type": "navigate",
+        "business_entity": "documento",
+        "semantic_target": "Coletar assinaturas",
+        "ui_context": "ged",
+        "expected_effect": {
+          "effect_type": "screen_change",
+          "description": "Algum efeito visível deve ocorrer após a ação.",
+          "verification_hint": null
+        },
+        "pedagogical_value": "Ensina como navigate relacionado a documento usando o alvo 'Coletar assinaturas'.",
+        "semantic_confidence": 0.65,
+        "reasoning_trace": [
+          "action_type=click",
+          "goal_type=navigate",
+          "semantic_target=Coletar assinaturas",
+          "ui_context=ged"
+        ]
+      },
+      "risk": {
+        "risk_level": "low",
+        "needs_confirmation": false,
+        "allow_coordinate_fallback": true,
+        "require_post_validation": false
+      },
+      "resolved": null,
+      "resolution_ok": false,
+      "trace": [
+        "all_strategies_failed"
+      ],
+      "skills_matched": 0
+    },
+    {
+      "event_id": "shadow_7",
+      "step": 4,
+      "intent": {
+        "intent_id": "int_8c54fd09ba23",
+        "source_event_id": "shadow_7",
+        "goal_type": "navigate",
+        "business_entity": "documento",
+        "semantic_target": "E-mail",
+        "ui_context": "ged",
+        "expected_effect": {
+          "effect_type": "screen_change",
+          "description": "Algum efeito visível deve ocorrer após a ação.",
+          "verification_hint": null
+        },
+        "pedagogical_value": "Ensina como navigate relacionado a documento usando o alvo 'E-mail'.",
+        "semantic_confidence": 0.8500000000000001,
+        "reasoning_trace": [
+          "action_type=click",
+          "goal_type=navigate",
+          "semantic_target=E-mail",
+          "ui_context=ged"
+        ]
+      },
+      "risk": {
+        "risk_level": "low",
+        "needs_confirmation": false,
+        "allow_coordinate_fallback": true,
+        "require_post_validation": false
+      },
+      "resolved": null,
+      "resolution_ok": false,
+      "trace": [
+        "all_strategies_failed"
+      ],
+      "skills_matched": 0
+    },
+    {
+      "event_id": "shadow_8",
+      "step": 5,
+      "intent": {
+        "intent_id": "int_9a4f183fe80b",
+        "source_event_id": "shadow_8",
+        "goal_type": "navigate",
+        "business_entity": "documento",
+        "semantic_target": "renan.kirsch@senior.com.br",
+        "ui_context": "ged",
+        "expected_effect": {
+          "effect_type": "screen_change",
+          "description": "Algum efeito visível deve ocorrer após a ação.",
+          "verification_hint": null
+        },
+        "pedagogical_value": "Ensina como navigate relacionado a documento usando o alvo 'renan.kirsch@senior.com.br'.",
+        "semantic_confidence": 0.8500000000000001,
+        "reasoning_trace": [
+          "action_type=click",
+          "goal_type=navigate",
+          "semantic_target=renan.kirsch@senior.com.br",
+          "ui_context=ged"
+        ]
+      },
+      "risk": {
+        "risk_level": "low",
+        "needs_confirmation": false,
+        "allow_coordinate_fallback": true,
+        "require_post_validation": false
+      },
+      "resolved": null,
+      "resolution_ok": false,
+      "trace": [
+        "all_strategies_failed"
+      ],
+      "skills_matched": 0
+    }
+  ]
+}

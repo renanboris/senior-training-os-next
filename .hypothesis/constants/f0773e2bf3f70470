@@ -1,0 +1,4 @@
+# file: C:\TrainingOS\capture\state_diff.py
+# hypothesis_version: 6.151.10
+
+['.ag-row', '.p-datatable-row', '.p-toast-message', '.toast-message', "[role='alert']", 'grid_refresh', 'grid_row_count', 'modal_close', 'modal_open', 'navigation', 'none', 'screen_change', 'title', 'toast', 'toast_present', 'tr[data-row]', 'url']

@@ -1,0 +1,4 @@
+# file: C:\TrainingOS\contracts\execution_result.py
+# hypothesis_version: 6.151.10
+
+['aborted', 'dom_change', 'failed', 'grid_change', 'manual', 'partial', 'screen_diff', 'success', 'toast']

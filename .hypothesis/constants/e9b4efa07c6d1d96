@@ -1,0 +1,4 @@
+# file: C:\TrainingOS\vision\strategies\frame_strategy.py
+# hypothesis_version: 6.151.10
+
+[0.8, 'cache_miss', 'confirm', 'delete', 'dom_miss', 'frame', 'frame_match_success', 'save']

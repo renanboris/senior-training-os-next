@@ -15,27 +15,38 @@ class DomStrategy(Strategy):
         if not target_text:
             return None
 
+        # Tenta por role=button
         locator = page.get_by_role("button", name=target_text)
         count = await locator.count()
-        if count == 0:
-            locator = page.get_by_label(target_text)
-            count = await locator.count()
+        if count > 0:
+            selector = f'role=button[name="{target_text}"]'
+            return self._build_result(ctx, selector)
 
-        if count == 0:
-            locator = page.get_by_placeholder(target_text)
-            count = await locator.count()
+        # Tenta por label
+        locator = page.get_by_label(target_text)
+        count = await locator.count()
+        if count > 0:
+            selector = f"label={target_text}"
+            return self._build_result(ctx, selector)
 
-        if count == 0:
-            return None
+        # Tenta por placeholder
+        locator = page.get_by_placeholder(target_text)
+        count = await locator.count()
+        if count > 0:
+            selector = f"placeholder={target_text}"
+            return self._build_result(ctx, selector)
 
+        return None
+
+    def _build_result(self, ctx: ResolutionContext, selector: str) -> ResolvedTarget:
         return ResolvedTarget(
             resolution_id=f"res_{uuid4().hex[:12]}",
             intent_id=ctx.intent.intent_id,
             strategy_used="dom",
-            resolved_target=ResolvedNode(selector=f"semantic:{target_text}"),
+            resolved_target=ResolvedNode(selector=selector),
             resolution_confidence=0.88,
             evidence=ResolutionEvidence(
-                matched_label=target_text,
+                matched_label=ctx.intent.semantic_target,
                 screen_fingerprint=ctx.screen_state.fingerprint,
             ),
             fallback_chain=["cache_miss", "dom_match_success"],

@@ -1,0 +1,4 @@
+# file: C:\TrainingOS\vision\strategies\coordinate_strategy.py
+# hypothesis_version: 6.151.10
+
+[0.58, 'cache_miss', 'coordinate_success', 'coordinates', 'dom_miss', 'frame_miss', 'vision_miss']

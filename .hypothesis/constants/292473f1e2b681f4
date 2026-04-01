@@ -1,0 +1,4 @@
+# file: C:\TrainingOS\runtime\effect_verifier.py
+# hypothesis_version: 6.151.10
+
+['field_filled', 'grid_refresh', 'modal_close', 'modal_open', 'navigation', 'none', 'screen_change', 'toast', 'toast_visible']

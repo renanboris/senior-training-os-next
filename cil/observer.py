@@ -1,6 +1,11 @@
 from __future__ import annotations
 
+import urllib.parse
+
 from contracts.screen_state import ScreenState, VisibleElementHint
+from cil.text_utils import TextNormalizer
+
+_normalizer = TextNormalizer()
 
 
 class ScreenObserver:
@@ -21,8 +26,7 @@ class ScreenObserver:
             """
             () => {
                 const text = document.body && document.body.innerText ? document.body.innerText : '';
-                return text.split('
-').join(' ').split('  ').join(' ').trim().slice(0, 1200);
+                return text.replace(/\\n/g, ' ').replace(/\\s+/g, ' ').trim().slice(0, 1200);
             }
             """
         )
@@ -58,7 +62,7 @@ class ScreenObserver:
             raw_hints = []
 
         hints = [VisibleElementHint(**item) for item in raw_hints if isinstance(item, dict)]
-        fingerprint = self._build_fingerprint(url, title, modal_open, hints)
+        fingerprint = self._build_fingerprint(url, title, modal_open, hints, primary_area=self._infer_primary_area(url, title, visible_text_excerpt))
 
         return ScreenState(
             url=url,
@@ -72,9 +76,21 @@ class ScreenObserver:
             visible_hints=hints,
         )
 
-    def _build_fingerprint(self, url: str | None, title: str | None, modal_open: bool, hints: list[VisibleElementHint]) -> str:
-        first_hints = '|'.join((h.label or '')[:20] for h in hints[:5])
-        return f"{url or 'no_url'}::{title or 'no_title'}::modal={int(modal_open)}::{first_hints}"
+    def _build_fingerprint(self, url: str | None, title: str | None, modal_open: bool, hints: list[VisibleElementHint], primary_area: str | None = None) -> str:
+        # Remove query params da URL para estabilidade
+        clean_url = url or "no_url"
+        try:
+            parsed = urllib.parse.urlparse(clean_url)
+            clean_url = parsed._replace(query="", fragment="").geturl()
+        except Exception:
+            pass
+
+        norm_url = _normalizer.normalize(clean_url)
+        norm_title = _normalizer.normalize(title or "no_title")
+        first_hints = "|".join((_normalizer.normalize(h.label or ""))[:20] for h in hints[:5])
+        area_part = _normalizer.normalize(primary_area or "")
+
+        return f"{norm_url}::{norm_title}::modal={int(modal_open)}::{area_part}::{first_hints}"
 
     def _infer_primary_area(self, url: str | None, title: str | None, text: str | None) -> str | None:
         blob = f"{url or ''} {title or ''} {text or ''}".lower()

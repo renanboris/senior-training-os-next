@@ -1,0 +1,4 @@
+# file: C:\TrainingOS\cil\planner.py
+# hypothesis_version: 6.151.10
+
+[0.55, 0.6, 0.65, 0.68, 0.7, 0.72, 0.75, 'Confirmar', 'Excluir', 'Salvar', 'a', 'abrir', 'aceitar', 'apagar', 'aplicar filtro', 'aprovar', 'buscar', 'button', 'campo', 'campo de busca', 'confirm', 'confirmar', 'confirme', 'deletar', 'delete', 'detalhar', 'digitar', 'escolher', 'excluir', 'field_filled', 'fill', 'filter', 'filtrar', 'filtro', 'gravar', 'grid_refresh', 'informar', 'inserir', 'item', 'loop_detected', 'marcar', 'menu principal', 'modal_close', 'modal_open', 'navigate', 'open', 'opção', 'pesquisar', 'plan_confirm', 'plan_delete', 'plan_fill', 'plan_filter', 'plan_loop_escape', 'plan_navigate', 'plan_open', 'plan_save', 'plan_search', 'plan_select', 'preencher', 'procurar', 'record_saved', 'registrar', 'remover', 'salvar', 'save', 'screen_change', 'search', 'selecionar', 'select', 'ver', 'visualizar']

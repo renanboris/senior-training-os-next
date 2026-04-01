@@ -1,0 +1,4 @@
+# file: C:\TrainingOS\orchestration\benchmark_runner.py
+# hypothesis_version: 6.151.10
+
+[0.0, 0.8, 1.0, '%Y%m%d_%H%M%S', '__main__', 'benchmarks', 'cases', 'expected_skills', 'f1_score', 'failed', 'goal_type', 'objective', 'passed', 'precision', 'recall', 'runtime_artifacts', 'semantic_target', 'shadow_jsonl_path', 'timestamp', 'total_cases', 'utf-8']

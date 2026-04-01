@@ -1,0 +1,4 @@
+# file: C:\TrainingOS\orchestration\shadow_mode_runner.py
+# hypothesis_version: 6.151.10
+
+['comparison', 'event_id', 'execution_result', 'intent', 'objective', 'record', 'resolved_target', 'risk', 'saved_to', 'trace']

@@ -1,0 +1,4 @@
+# file: C:\TrainingOS\contracts\intent_action.py
+# hypothesis_version: 6.151.10
+
+[0.5, 'close', 'confirm', 'delete', 'download', 'download_started', 'expand', 'field_filled', 'fill', 'filter', 'filter_applied', 'grid_refresh', 'modal_close', 'modal_open', 'navigate', 'open', 'record_saved', 'save', 'screen_change', 'search', 'select', 'toast_visible', 'upload', 'upload_completed']

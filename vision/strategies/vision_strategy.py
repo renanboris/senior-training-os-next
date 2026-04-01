@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from typing import Optional
 from uuid import uuid4
 
@@ -7,15 +8,30 @@ from contracts.observed_action import RelativeBox
 from contracts.resolved_target import ResolutionEvidence, ResolvedNode, ResolvedTarget
 from vision.strategies.base import ResolutionContext, Strategy
 
+logger = logging.getLogger(__name__)
+
 
 class VisionStrategy(Strategy):
     name = "vision"
 
-    def __init__(self, infer_with_llm):
-        self.infer_with_llm = infer_with_llm
+    def __init__(self, llm_client) -> None:
+        """
+        Args:
+            llm_client: instância de LLMClient com método async infer_visual().
+        """
+        self.llm_client = llm_client
 
     async def try_resolve(self, page, ctx: ResolutionContext) -> Optional[ResolvedTarget]:
-        result = await self.infer_with_llm(page=page, intent=ctx.intent, state=ctx.screen_state)
+        try:
+            result = await self.llm_client.infer_visual(
+                page=page,
+                intent=ctx.intent,
+                state=ctx.screen_state,
+            )
+        except Exception as exc:
+            logger.error("VisionStrategy: infer_visual lançou exceção: %s", exc)
+            return None
+
         if not result:
             return None
 

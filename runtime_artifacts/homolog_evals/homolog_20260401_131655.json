@@ -1,0 +1,785 @@
+{
+  "shadow_file": "shadow_exports\\TESTE_DUAL_002_shadow.jsonl",
+  "records": [
+    {
+      "event_id": "shadow_4",
+      "step": 1,
+      "intent": {
+        "intent_id": "int_c0414d6c6dec",
+        "source_event_id": "shadow_4",
+        "goal_type": "navigate",
+        "business_entity": "documento",
+        "semantic_target": "Financeiro",
+        "ui_context": "ged",
+        "expected_effect": {
+          "effect_type": "screen_change",
+          "description": "Algum efeito visível deve ocorrer após a ação.",
+          "verification_hint": null
+        },
+        "pedagogical_value": "Ensina como navigate relacionado a documento usando o alvo 'Financeiro'.",
+        "semantic_confidence": 0.8500000000000001,
+        "reasoning_trace": [
+          "action_type=double_click",
+          "goal_type=navigate",
+          "semantic_target=Financeiro",
+          "ui_context=ged"
+        ]
+      },
+      "risk": {
+        "risk_level": "low",
+        "needs_confirmation": false,
+        "allow_coordinate_fallback": true,
+        "require_post_validation": false
+      },
+      "resolved": {
+        "resolution_id": "res_a41db7b331db",
+        "intent_id": "int_c0414d6c6dec",
+        "strategy_used": "coordinates",
+        "resolved_target": {
+          "selector": null,
+          "iframe": null,
+          "coords_rel": {
+            "x_pct": 0.2398,
+            "y_pct": 0.6376,
+            "w_pct": 0.2375,
+            "h_pct": 0.0301
+          },
+          "active_element": false
+        },
+        "resolution_confidence": 0.58,
+        "evidence": {
+          "matched_label": "Financeiro",
+          "matched_role": null,
+          "matched_text": null,
+          "screen_fingerprint": "GED | Financeiro",
+          "frame_path": null
+        },
+        "fallback_chain": [
+          "cache_miss",
+          "dom_miss",
+          "frame_miss",
+          "vision_miss",
+          "coordinate_success"
+        ],
+        "needs_extra_validation": true
+      },
+      "resolution_ok": true,
+      "trace": [
+        "Tentando strategy: dom",
+        "Strategy falhou: dom",
+        "Tentando strategy: coordinates",
+        "Strategy vencedora: coordinates (confidence=0.58)"
+      ],
+      "skills_matched": 0
+    },
+    {
+      "event_id": "shadow_5",
+      "step": 2,
+      "intent": {
+        "intent_id": "int_b636ed8afcf2",
+        "source_event_id": "shadow_5",
+        "goal_type": "navigate",
+        "business_entity": "documento",
+        "semantic_target": "Contas a receber01.pdf",
+        "ui_context": "ged",
+        "expected_effect": {
+          "effect_type": "screen_change",
+          "description": "Algum efeito visível deve ocorrer após a ação.",
+          "verification_hint": null
+        },
+        "pedagogical_value": "Ensina como navigate relacionado a documento usando o alvo 'Contas a receber01.pdf'.",
+        "semantic_confidence": 0.8500000000000001,
+        "reasoning_trace": [
+          "action_type=click",
+          "goal_type=navigate",
+          "semantic_target=Contas a receber01.pdf",
+          "ui_context=ged"
+        ]
+      },
+      "risk": {
+        "risk_level": "low",
+        "needs_confirmation": false,
+        "allow_coordinate_fallback": true,
+        "require_post_validation": false
+      },
+      "resolved": {
+        "resolution_id": "res_1eb0e917656e",
+        "intent_id": "int_b636ed8afcf2",
+        "strategy_used": "coordinates",
+        "resolved_target": {
+          "selector": null,
+          "iframe": null,
+          "coords_rel": {
+            "x_pct": 0.1781,
+            "y_pct": 0.7782,
+            "w_pct": 0.1141,
+            "h_pct": 0.0226
+          },
+          "active_element": false
+        },
+        "resolution_confidence": 0.58,
+        "evidence": {
+          "matched_label": "Contas a receber01.pdf",
+          "matched_role": null,
+          "matched_text": null,
+          "screen_fingerprint": "GED | Financeiro",
+          "frame_path": null
+        },
+        "fallback_chain": [
+          "cache_miss",
+          "dom_miss",
+          "frame_miss",
+          "vision_miss",
+          "coordinate_success"
+        ],
+        "needs_extra_validation": true
+      },
+      "resolution_ok": true,
+      "trace": [
+        "Tentando strategy: dom",
+        "Strategy falhou: dom",
+        "Tentando strategy: coordinates",
+        "Strategy vencedora: coordinates (confidence=0.58)"
+      ],
+      "skills_matched": 0
+    },
+    {
+      "event_id": "shadow_6",
+      "step": 3,
+      "intent": {
+        "intent_id": "int_fbcf4eea03a1",
+        "source_event_id": "shadow_6",
+        "goal_type": "navigate",
+        "business_entity": "documento",
+        "semantic_target": "Coletar assinaturas",
+        "ui_context": "ged",
+        "expected_effect": {
+          "effect_type": "screen_change",
+          "description": "Algum efeito visível deve ocorrer após a ação.",
+          "verification_hint": null
+        },
+        "pedagogical_value": "Ensina como navigate relacionado a documento usando o alvo 'Coletar assinaturas'.",
+        "semantic_confidence": 0.65,
+        "reasoning_trace": [
+          "action_type=click",
+          "goal_type=navigate",
+          "semantic_target=Coletar assinaturas",
+          "ui_context=ged"
+        ]
+      },
+      "risk": {
+        "risk_level": "low",
+        "needs_confirmation": false,
+        "allow_coordinate_fallback": true,
+        "require_post_validation": false
+      },
+      "resolved": {
+        "resolution_id": "res_a2e2e17c7929",
+        "intent_id": "int_fbcf4eea03a1",
+        "strategy_used": "coordinates",
+        "resolved_target": {
+          "selector": null,
+          "iframe": null,
+          "coords_rel": {
+            "x_pct": 0.4766,
+            "y_pct": 0.5113,
+            "w_pct": 0.0312,
+            "h_pct": 0.0301
+          },
+          "active_element": false
+        },
+        "resolution_confidence": 0.58,
+        "evidence": {
+          "matched_label": "Coletar assinaturas",
+          "matched_role": null,
+          "matched_text": null,
+          "screen_fingerprint": "GED | Coletar Assinaturas",
+          "frame_path": null
+        },
+        "fallback_chain": [
+          "cache_miss",
+          "dom_miss",
+          "frame_miss",
+          "vision_miss",
+          "coordinate_success"
+        ],
+        "needs_extra_validation": true
+      },
+      "resolution_ok": true,
+      "trace": [
+        "Tentando strategy: dom",
+        "Strategy falhou: dom",
+        "Tentando strategy: coordinates",
+        "Strategy vencedora: coordinates (confidence=0.58)"
+      ],
+      "skills_matched": 0
+    },
+    {
+      "event_id": "shadow_7",
+      "step": 4,
+      "intent": {
+        "intent_id": "int_9f66c8cf38ef",
+        "source_event_id": "shadow_7",
+        "goal_type": "navigate",
+        "business_entity": "documento",
+        "semantic_target": "E-mail",
+        "ui_context": "ged",
+        "expected_effect": {
+          "effect_type": "screen_change",
+          "description": "Algum efeito visível deve ocorrer após a ação.",
+          "verification_hint": null
+        },
+        "pedagogical_value": "Ensina como navigate relacionado a documento usando o alvo 'E-mail'.",
+        "semantic_confidence": 0.8500000000000001,
+        "reasoning_trace": [
+          "action_type=click",
+          "goal_type=navigate",
+          "semantic_target=E-mail",
+          "ui_context=ged"
+        ]
+      },
+      "risk": {
+        "risk_level": "low",
+        "needs_confirmation": false,
+        "allow_coordinate_fallback": true,
+        "require_post_validation": false
+      },
+      "resolved": {
+        "resolution_id": "res_bfac6dbabe9c",
+        "intent_id": "int_9f66c8cf38ef",
+        "strategy_used": "coordinates",
+        "resolved_target": {
+          "selector": null,
+          "iframe": null,
+          "coords_rel": {
+            "x_pct": 0.3773,
+            "y_pct": 0.2662,
+            "w_pct": 0.1922,
+            "h_pct": 0.0511
+          },
+          "active_element": false
+        },
+        "resolution_confidence": 0.58,
+        "evidence": {
+          "matched_label": "E-mail",
+          "matched_role": null,
+          "matched_text": null,
+          "screen_fingerprint": "GED | Coletar Assinaturas",
+          "frame_path": null
+        },
+        "fallback_chain": [
+          "cache_miss",
+          "dom_miss",
+          "frame_miss",
+          "vision_miss",
+          "coordinate_success"
+        ],
+        "needs_extra_validation": true
+      },
+      "resolution_ok": true,
+      "trace": [
+        "Tentando strategy: dom",
+        "Strategy falhou: dom",
+        "Tentando strategy: coordinates",
+        "Strategy vencedora: coordinates (confidence=0.58)"
+      ],
+      "skills_matched": 0
+    },
+    {
+      "event_id": "shadow_8",
+      "step": 5,
+      "intent": {
+        "intent_id": "int_510d9bd625ab",
+        "source_event_id": "shadow_8",
+        "goal_type": "navigate",
+        "business_entity": "documento",
+        "semantic_target": "renan.kirsch@senior.com.br",
+        "ui_context": "ged",
+        "expected_effect": {
+          "effect_type": "screen_change",
+          "description": "Algum efeito visível deve ocorrer após a ação.",
+          "verification_hint": null
+        },
+        "pedagogical_value": "Ensina como navigate relacionado a documento usando o alvo 'renan.kirsch@senior.com.br'.",
+        "semantic_confidence": 0.8500000000000001,
+        "reasoning_trace": [
+          "action_type=click",
+          "goal_type=navigate",
+          "semantic_target=renan.kirsch@senior.com.br",
+          "ui_context=ged"
+        ]
+      },
+      "risk": {
+        "risk_level": "low",
+        "needs_confirmation": false,
+        "allow_coordinate_fallback": true,
+        "require_post_validation": false
+      },
+      "resolved": {
+        "resolution_id": "res_27b08a223d72",
+        "intent_id": "int_510d9bd625ab",
+        "strategy_used": "coordinates",
+        "resolved_target": {
+          "selector": null,
+          "iframe": null,
+          "coords_rel": {
+            "x_pct": 0.3773,
+            "y_pct": 0.2662,
+            "w_pct": 0.1922,
+            "h_pct": 0.0511
+          },
+          "active_element": false
+        },
+        "resolution_confidence": 0.58,
+        "evidence": {
+          "matched_label": "renan.kirsch@senior.com.br",
+          "matched_role": null,
+          "matched_text": null,
+          "screen_fingerprint": "GED | Coletar Assinaturas",
+          "frame_path": null
+        },
+        "fallback_chain": [
+          "cache_miss",
+          "dom_miss",
+          "frame_miss",
+          "vision_miss",
+          "coordinate_success"
+        ],
+        "needs_extra_validation": true
+      },
+      "resolution_ok": true,
+      "trace": [
+        "Tentando strategy: dom",
+        "Strategy falhou: dom",
+        "Tentando strategy: coordinates",
+        "Strategy vencedora: coordinates (confidence=0.58)"
+      ],
+      "skills_matched": 0
+    },
+    {
+      "event_id": "shadow_9",
+      "step": 6,
+      "intent": {
+        "intent_id": "int_9f4c88818434",
+        "source_event_id": "shadow_9",
+        "goal_type": "navigate",
+        "business_entity": "documento",
+        "semantic_target": "Renan",
+        "ui_context": "ged",
+        "expected_effect": {
+          "effect_type": "screen_change",
+          "description": "Algum efeito visível deve ocorrer após a ação.",
+          "verification_hint": null
+        },
+        "pedagogical_value": "Ensina como navigate relacionado a documento usando o alvo 'Renan'.",
+        "semantic_confidence": 0.8500000000000001,
+        "reasoning_trace": [
+          "action_type=click",
+          "goal_type=navigate",
+          "semantic_target=Renan",
+          "ui_context=ged"
+        ]
+      },
+      "risk": {
+        "risk_level": "low",
+        "needs_confirmation": false,
+        "allow_coordinate_fallback": true,
+        "require_post_validation": false
+      },
+      "resolved": {
+        "resolution_id": "res_5d026c85269e",
+        "intent_id": "int_9f4c88818434",
+        "strategy_used": "coordinates",
+        "resolved_target": {
+          "selector": null,
+          "iframe": null,
+          "coords_rel": {
+            "x_pct": 0.5758,
+            "y_pct": 0.2662,
+            "w_pct": 0.1922,
+            "h_pct": 0.0511
+          },
+          "active_element": false
+        },
+        "resolution_confidence": 0.58,
+        "evidence": {
+          "matched_label": "Renan",
+          "matched_role": null,
+          "matched_text": null,
+          "screen_fingerprint": "GED | Coletar Assinaturas",
+          "frame_path": null
+        },
+        "fallback_chain": [
+          "cache_miss",
+          "dom_miss",
+          "frame_miss",
+          "vision_miss",
+          "coordinate_success"
+        ],
+        "needs_extra_validation": true
+      },
+      "resolution_ok": true,
+      "trace": [
+        "Tentando strategy: dom",
+        "Strategy falhou: dom",
+        "Tentando strategy: coordinates",
+        "Strategy vencedora: coordinates (confidence=0.58)"
+      ],
+      "skills_matched": 0
+    },
+    {
+      "event_id": "shadow_10",
+      "step": 7,
+      "intent": {
+        "intent_id": "int_16b3ba8aad23",
+        "source_event_id": "shadow_10",
+        "goal_type": "navigate",
+        "business_entity": "documento",
+        "semantic_target": "Preencha com instruções para os assinant",
+        "ui_context": null,
+        "expected_effect": {
+          "effect_type": "screen_change",
+          "description": "Algum efeito visível deve ocorrer após a ação.",
+          "verification_hint": null
+        },
+        "pedagogical_value": "Ensina como navigate relacionado a documento usando o alvo 'Preencha com instruções para os assinant'.",
+        "semantic_confidence": 0.8,
+        "reasoning_trace": [
+          "action_type=click",
+          "goal_type=navigate",
+          "semantic_target=Preencha com instruções para os assinant"
+        ]
+      },
+      "risk": {
+        "risk_level": "low",
+        "needs_confirmation": false,
+        "allow_coordinate_fallback": true,
+        "require_post_validation": false
+      },
+      "resolved": {
+        "resolution_id": "res_57e8798aa599",
+        "intent_id": "int_16b3ba8aad23",
+        "strategy_used": "coordinates",
+        "resolved_target": {
+          "selector": null,
+          "iframe": null,
+          "coords_rel": {
+            "x_pct": 0.4289,
+            "y_pct": 0.5203,
+            "w_pct": 0.2953,
+            "h_pct": 0.1504
+          },
+          "active_element": false
+        },
+        "resolution_confidence": 0.58,
+        "evidence": {
+          "matched_label": "Preencha com instruções para os assinant",
+          "matched_role": null,
+          "matched_text": null,
+          "screen_fingerprint": "Senior X | Shell",
+          "frame_path": null
+        },
+        "fallback_chain": [
+          "cache_miss",
+          "dom_miss",
+          "frame_miss",
+          "vision_miss",
+          "coordinate_success"
+        ],
+        "needs_extra_validation": true
+      },
+      "resolution_ok": true,
+      "trace": [
+        "Tentando strategy: dom",
+        "Strategy falhou: dom",
+        "Tentando strategy: coordinates",
+        "Strategy vencedora: coordinates (confidence=0.58)"
+      ],
+      "skills_matched": 0
+    },
+    {
+      "event_id": "shadow_11",
+      "step": 8,
+      "intent": {
+        "intent_id": "int_581c13192e73",
+        "source_event_id": "shadow_11",
+        "goal_type": "navigate",
+        "business_entity": "documento",
+        "semantic_target": "Analisar e assinar",
+        "ui_context": "ged",
+        "expected_effect": {
+          "effect_type": "screen_change",
+          "description": "Algum efeito visível deve ocorrer após a ação.",
+          "verification_hint": null
+        },
+        "pedagogical_value": "Ensina como navigate relacionado a documento usando o alvo 'Analisar e assinar'.",
+        "semantic_confidence": 0.8500000000000001,
+        "reasoning_trace": [
+          "action_type=click",
+          "goal_type=navigate",
+          "semantic_target=Analisar e assinar",
+          "ui_context=ged"
+        ]
+      },
+      "risk": {
+        "risk_level": "low",
+        "needs_confirmation": false,
+        "allow_coordinate_fallback": true,
+        "require_post_validation": false
+      },
+      "resolved": {
+        "resolution_id": "res_3719c3098076",
+        "intent_id": "int_581c13192e73",
+        "strategy_used": "coordinates",
+        "resolved_target": {
+          "selector": null,
+          "iframe": null,
+          "coords_rel": {
+            "x_pct": 0.4289,
+            "y_pct": 0.5203,
+            "w_pct": 0.2953,
+            "h_pct": 0.1504
+          },
+          "active_element": false
+        },
+        "resolution_confidence": 0.58,
+        "evidence": {
+          "matched_label": "Analisar e assinar",
+          "matched_role": null,
+          "matched_text": null,
+          "screen_fingerprint": "GED | Coletar Assinaturas",
+          "frame_path": null
+        },
+        "fallback_chain": [
+          "cache_miss",
+          "dom_miss",
+          "frame_miss",
+          "vision_miss",
+          "coordinate_success"
+        ],
+        "needs_extra_validation": true
+      },
+      "resolution_ok": true,
+      "trace": [
+        "Tentando strategy: dom",
+        "Strategy falhou: dom",
+        "Tentando strategy: coordinates",
+        "Strategy vencedora: coordinates (confidence=0.58)"
+      ],
+      "skills_matched": 0
+    },
+    {
+      "event_id": "shadow_12",
+      "step": 9,
+      "intent": {
+        "intent_id": "int_b652332c2166",
+        "source_event_id": "shadow_12",
+        "goal_type": "navigate",
+        "business_entity": "documento",
+        "semantic_target": "Caixa de selecao Angular",
+        "ui_context": "ged",
+        "expected_effect": {
+          "effect_type": "screen_change",
+          "description": "Algum efeito visível deve ocorrer após a ação.",
+          "verification_hint": null
+        },
+        "pedagogical_value": "Ensina como navigate relacionado a documento usando o alvo 'Caixa de selecao Angular'.",
+        "semantic_confidence": 0.8500000000000001,
+        "reasoning_trace": [
+          "action_type=click",
+          "goal_type=navigate",
+          "semantic_target=Caixa de selecao Angular",
+          "ui_context=ged"
+        ]
+      },
+      "risk": {
+        "risk_level": "low",
+        "needs_confirmation": false,
+        "allow_coordinate_fallback": true,
+        "require_post_validation": false
+      },
+      "resolved": {
+        "resolution_id": "res_36d33140ce37",
+        "intent_id": "int_b652332c2166",
+        "strategy_used": "coordinates",
+        "resolved_target": {
+          "selector": null,
+          "iframe": null,
+          "coords_rel": {
+            "x_pct": 0.6023,
+            "y_pct": 0.4782,
+            "w_pct": 0.0156,
+            "h_pct": 0.0301
+          },
+          "active_element": false
+        },
+        "resolution_confidence": 0.58,
+        "evidence": {
+          "matched_label": "Caixa de selecao Angular",
+          "matched_role": null,
+          "matched_text": null,
+          "screen_fingerprint": "GED | Coletar Assinaturas",
+          "frame_path": null
+        },
+        "fallback_chain": [
+          "cache_miss",
+          "dom_miss",
+          "frame_miss",
+          "vision_miss",
+          "coordinate_success"
+        ],
+        "needs_extra_validation": true
+      },
+      "resolution_ok": true,
+      "trace": [
+        "Tentando strategy: dom",
+        "Strategy falhou: dom",
+        "Tentando strategy: coordinates",
+        "Strategy vencedora: coordinates (confidence=0.58)"
+      ],
+      "skills_matched": 4
+    },
+    {
+      "event_id": "shadow_13",
+      "step": 10,
+      "intent": {
+        "intent_id": "int_873a3086de35",
+        "source_event_id": "shadow_13",
+        "goal_type": "navigate",
+        "business_entity": "documento",
+        "semantic_target": "undefined",
+        "ui_context": "ged",
+        "expected_effect": {
+          "effect_type": "screen_change",
+          "description": "Algum efeito visível deve ocorrer após a ação.",
+          "verification_hint": null
+        },
+        "pedagogical_value": "Ensina como navigate relacionado a documento usando o alvo 'undefined'.",
+        "semantic_confidence": 0.8500000000000001,
+        "reasoning_trace": [
+          "action_type=click",
+          "goal_type=navigate",
+          "semantic_target=undefined",
+          "ui_context=ged"
+        ]
+      },
+      "risk": {
+        "risk_level": "low",
+        "needs_confirmation": false,
+        "allow_coordinate_fallback": true,
+        "require_post_validation": false
+      },
+      "resolved": {
+        "resolution_id": "res_c5ab77eaaa86",
+        "intent_id": "int_873a3086de35",
+        "strategy_used": "coordinates",
+        "resolved_target": {
+          "selector": null,
+          "iframe": null,
+          "coords_rel": {
+            "x_pct": 0.5941,
+            "y_pct": 0.4624,
+            "w_pct": 0.0008,
+            "h_pct": 0.0015
+          },
+          "active_element": false
+        },
+        "resolution_confidence": 0.58,
+        "evidence": {
+          "matched_label": "undefined",
+          "matched_role": null,
+          "matched_text": null,
+          "screen_fingerprint": "GED | Coletar Assinaturas",
+          "frame_path": null
+        },
+        "fallback_chain": [
+          "cache_miss",
+          "dom_miss",
+          "frame_miss",
+          "vision_miss",
+          "coordinate_success"
+        ],
+        "needs_extra_validation": true
+      },
+      "resolution_ok": true,
+      "trace": [
+        "Tentando strategy: dom",
+        "Strategy falhou: dom",
+        "Tentando strategy: coordinates",
+        "Strategy vencedora: coordinates (confidence=0.58)"
+      ],
+      "skills_matched": 0
+    },
+    {
+      "event_id": "shadow_14",
+      "step": 11,
+      "intent": {
+        "intent_id": "int_fe923ab5f7ac",
+        "source_event_id": "shadow_14",
+        "goal_type": "navigate",
+        "business_entity": "documento",
+        "semantic_target": "Enviar para assinatura",
+        "ui_context": "ged",
+        "expected_effect": {
+          "effect_type": "screen_change",
+          "description": "Algum efeito visível deve ocorrer após a ação.",
+          "verification_hint": null
+        },
+        "pedagogical_value": "Ensina como navigate relacionado a documento usando o alvo 'Enviar para assinatura'.",
+        "semantic_confidence": 0.8500000000000001,
+        "reasoning_trace": [
+          "action_type=click",
+          "goal_type=navigate",
+          "semantic_target=Enviar para assinatura",
+          "ui_context=ged"
+        ]
+      },
+      "risk": {
+        "risk_level": "low",
+        "needs_confirmation": false,
+        "allow_coordinate_fallback": true,
+        "require_post_validation": false
+      },
+      "resolved": {
+        "resolution_id": "res_e59432e3b83f",
+        "intent_id": "int_fe923ab5f7ac",
+        "strategy_used": "coordinates",
+        "resolved_target": {
+          "selector": null,
+          "iframe": null,
+          "coords_rel": {
+            "x_pct": 0.3523,
+            "y_pct": 0.9414,
+            "w_pct": 0.1094,
+            "h_pct": 0.0241
+          },
+          "active_element": false
+        },
+        "resolution_confidence": 0.58,
+        "evidence": {
+          "matched_label": "Enviar para assinatura",
+          "matched_role": null,
+          "matched_text": null,
+          "screen_fingerprint": "GED | Coletar Assinaturas",
+          "frame_path": null
+        },
+        "fallback_chain": [
+          "cache_miss",
+          "dom_miss",
+          "frame_miss",
+          "vision_miss",
+          "coordinate_success"
+        ],
+        "needs_extra_validation": true
+      },
+      "resolution_ok": true,
+      "trace": [
+        "Tentando strategy: dom",
+        "Strategy falhou: dom",
+        "Tentando strategy: coordinates",
+        "Strategy vencedora: coordinates (confidence=0.58)"
+      ],
+      "skills_matched": 4
+    }
+  ]
+}

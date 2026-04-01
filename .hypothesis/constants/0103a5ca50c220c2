@@ -1,0 +1,4 @@
+# file: C:\TrainingOS\vision\strategies\active_element_strategy.py
+# hypothesis_version: 6.151.10
+
+[0.72, 'active_element', 'ariaLabel', 'cache_miss', 'confirm', 'delete', 'name', 'placeholder', 'save', 'tag']
