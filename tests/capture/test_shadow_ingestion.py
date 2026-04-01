@@ -63,14 +63,14 @@ def test_filter_removes_events_without_target() -> None:
 
 
 def test_filter_shell_events_when_iframe_present() -> None:
+    """Shell events com business_target valido sao preservados (necessario para tutorial player)."""
     events = [
         {"is_noise": False, "capture_scope": "shell", "business_target": "Menu"},
-        {"is_noise": False, "capture_scope": "module_iframe", "business_target": "Botão"},
+        {"is_noise": False, "capture_scope": "module_iframe", "business_target": "Botao"},
     ]
     result = filter_useful_events(events)
-    # shell deve ser filtrado quando há module_iframe
-    assert len(result) == 1
-    assert result[0]["capture_scope"] == "module_iframe"
+    # Ambos devem ser preservados — shell com target valido e module_iframe
+    assert len(result) == 2
 
 
 # ---------------------------------------------------------------------------

@@ -1,0 +1,4 @@
+# file: C:\TrainingOS\tutorial\player.py
+# hypothesis_version: 6.151.10
+
+[0.0, 0.05, 0.15, 0.5, 1.0, 1.5, 2.0, 900, 1440, 30000, 45000, '!!', '*.mp4', '*.webm', 'OK', 'SENIOR_PASS', 'SENIOR_URL', 'SENIOR_USER', 'audio', 'audio_file', 'business_target', 'button#nextBtn', 'domcontentloaded', 'duration', 'elemento_alvo', 'end_sec', 'file', 'guide', 'height', "input[type='email']", 'intencao_semantica', 'label_curto', 'login', 'micro_narracao', 'narration', 'networkidle', 'openid-connect', 'raw', 'record-only', 'replay', 'runtime_artifacts', 'sso', 'start_sec', 'step_id', 'success', 'text', 'tutorials', 'width']

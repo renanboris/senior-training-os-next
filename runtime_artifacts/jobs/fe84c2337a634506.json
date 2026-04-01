@@ -1,0 +1,11 @@
+{
+  "job_id": "fe84c2337a634506",
+  "training_id": "fe84c2337a634506",
+  "lesson_name": "TESTE_DUAL_002_shadow",
+  "created_at": "2026-04-01T16:38:00.599535Z",
+  "browser_video_path": "runtime_artifacts\\tutorials\\fe84c2337a634506\\raw\\e740749126ee4ca925506923c8a3531a.webm",
+  "output_mp4_path": "runtime_artifacts\\tutorials\\fe84c2337a634506\\fe84c2337a634506.mp4",
+  "output_srt_path": "runtime_artifacts\\tutorials\\fe84c2337a634506\\fe84c2337a634506.srt",
+  "cut_start_sec": 0.0,
+  "audio_timeline": []
+}

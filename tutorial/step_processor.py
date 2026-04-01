@@ -114,11 +114,64 @@ class StepProcessor:
 
         # 6. Overlays visuais (replay e guide)
         if self.mode != "record-only":
-            coords_rel = resolved.resolved_target.coords_rel
-            selector = resolved.resolved_target.selector
+            # Usa coordenadas do shadow event diretamente para o highlight
+            el = event.get("elemento_alvo") or {}
+            cr = el.get("coordenadas_relativas")
+            coords_from_event = None
+            if cr:
+                try:
+                    coords_from_event = RelativeBox(
+                        x_pct=float(cr.get("x_pct", 0.5)),
+                        y_pct=float(cr.get("y_pct", 0.5)),
+                        w_pct=float(cr.get("w_pct", 0.05)),
+                        h_pct=float(cr.get("h_pct", 0.05)),
+                    )
+                except Exception:
+                    pass
+
+            coords_rel = coords_from_event or resolved.resolved_target.coords_rel
+            selector = resolved.resolved_target.selector if not coords_rel else None
+
+            # Injeta highlight diretamente via page.evaluate (sem safe_evaluate)
             await self.highlight.inject(page, coords_rel=coords_rel, selector=selector)
-            await show_subtitle(page, intent.pedagogical_value or "")
-            await update_progress_pill(page, step_index, total_steps, lesson_name)
+
+            # Exibe legenda diretamente via page.evaluate
+            narration = intent.pedagogical_value or ""
+            if narration:
+                try:
+                    await page.evaluate(
+                        """(texto) => {
+                            const cur = document.getElementById('senior-video-subtitle');
+                            if (cur) cur.remove();
+                            const sub = document.createElement('div');
+                            sub.id = 'senior-video-subtitle';
+                            sub.style.cssText = 'position:fixed;bottom:40px;left:50%;transform:translateX(-50%);background:rgba(15,23,42,.92);color:#fff;padding:14px 32px;border-radius:50px;z-index:2147483645;font-family:Segoe UI,sans-serif;font-size:16px;max-width:80%;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.4);';
+                            sub.innerText = texto;
+                            document.documentElement.appendChild(sub);
+                        }""",
+                        narration,
+                    )
+                except Exception:
+                    pass
+
+            # Atualiza pill de progresso
+            try:
+                pct = int((step_index / max(total_steps, 1)) * 100)
+                dashoffset = 62.8 - (62.8 * pct) / 100
+                await page.evaluate(
+                    f"""() => {{
+                        let pill = document.getElementById('senior-progress-pill');
+                        if (!pill) {{
+                            pill = document.createElement('div');
+                            pill.id = 'senior-progress-pill';
+                            pill.style.cssText = 'position:fixed;top:20px;right:20px;z-index:2147483646;background:rgba(15,23,42,.85);padding:8px 16px;border-radius:100px;color:#fff;font-family:Segoe UI,sans-serif;font-size:13px;';
+                            document.documentElement.appendChild(pill);
+                        }}
+                        pill.innerText = '{lesson_name} — Passo {step_index} de {total_steps}';
+                    }}"""
+                )
+            except Exception:
+                pass
 
         # 7. Executa a ação (apenas replay)
         status: Literal["success", "resolution_failed", "execution_partial", "skipped"] = "success"
@@ -143,16 +196,21 @@ class StepProcessor:
             except Exception as exc:
                 status = "execution_partial"
 
-        # 8. Remove overlays
-        if self.mode != "record-only":
-            await self.highlight.remove(page)
-            await remove_subtitle(page)
-
-        # 9. Delay humanizado
+        # 8. Aguarda o delay com overlays visíveis, depois remove
         if self.mode == "record-only":
             await asyncio.sleep(2.0)
         else:
             await self.humanizer.wait(audio_duration)
+
+        # Remove overlays DEPOIS do delay (ficam visíveis durante todo o passo)
+        if self.mode != "record-only":
+            await self.highlight.remove(page)
+            try:
+                await page.evaluate(
+                    "() => { const e = document.getElementById('senior-video-subtitle'); if (e) e.remove(); }"
+                )
+            except Exception:
+                pass
 
         return StepResult(
             step_index=step_index,
@@ -177,8 +235,13 @@ class StepProcessor:
             return
 
         try:
-            await page.goto(event_url, wait_until="domcontentloaded", timeout=15000)
-            await asyncio.sleep(0.8)
+            await page.goto(event_url, wait_until="domcontentloaded", timeout=20000)
+            # Aguarda SPA estabilizar — SPAs corporativas precisam de mais tempo
+            try:
+                await page.wait_for_load_state("networkidle", timeout=10000)
+            except Exception:
+                pass
+            await asyncio.sleep(1.5)
         except Exception as exc:
             print(f"  [aviso] Nao navegou para {event_url[:60]}: {exc}")
 

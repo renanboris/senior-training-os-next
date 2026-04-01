@@ -33,25 +33,25 @@ async def test_inject_calls_evaluate_with_coords():
     page_mock.evaluate = AsyncMock(return_value=None)
 
     coords = RelativeBox(x_pct=0.1, y_pct=0.2, w_pct=0.05, h_pct=0.05)
+    await highlight.inject(page_mock, coords_rel=coords)
 
-    with patch("tutorial.highlight.safe_evaluate", new_callable=AsyncMock) as mock_safe:
-        await highlight.inject(page_mock, coords_rel=coords)
-        mock_safe.assert_called_once()
-        script_arg = mock_safe.call_args[0][1]
-        assert "#FF6B35" in script_arg
+    page_mock.evaluate.assert_called_once()
+    script_arg = page_mock.evaluate.call_args[0][0]
+    assert "#FF6B35" in script_arg
 
 
 @pytest.mark.asyncio
 async def test_remove_calls_evaluate():
     highlight = ElementHighlight()
     page_mock = MagicMock()
+    page_mock.evaluate = AsyncMock(return_value=None)
 
-    with patch("tutorial.highlight.safe_evaluate", new_callable=AsyncMock) as mock_safe:
-        await highlight.remove(page_mock)
-        mock_safe.assert_called_once()
-        script_arg = mock_safe.call_args[0][1]
-        assert "senior-element-highlight" in script_arg
-        assert "remove()" in script_arg
+    await highlight.remove(page_mock)
+
+    page_mock.evaluate.assert_called_once()
+    script_arg = page_mock.evaluate.call_args[0][0]
+    assert "senior-element-highlight" in script_arg
+    assert "remove()" in script_arg
 
 
 @pytest.mark.asyncio

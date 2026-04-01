@@ -171,6 +171,10 @@ class TutorialPlayer:
     async def _render_final_video(self, manifest: JobManifest, paths: ArtifactPaths) -> None:
         """Renderiza o vídeo final com áudio TTS e legendas."""
         from runtime.media_pipeline import VideoRenderer
+
+        if not manifest.audio_timeline:
+            print("Aviso: nenhum audio TTS gerado — video sem narração.")
+
         timeline = [
             {
                 "step_id": item.step_id,
@@ -194,6 +198,8 @@ class TutorialPlayer:
             print(f"Legendas: {paths.output_srt.resolve()}")
         except Exception as exc:
             print(f"ERRO na renderizacao: {exc}", file=sys.stderr)
+            import traceback
+            traceback.print_exc()
             if self._manifest_store and self._manifest:
                 self._manifest_store.save(self._manifest)
             sys.exit(1)
@@ -243,15 +249,61 @@ class TutorialPlayer:
         except (OSError, ValueError):
             pass
 
-        # 4. Inicializa componentes
-        from runtime.media_pipeline import TTSService, VideoRenderer
+        # 4. Pré-gera TODOS os áudios TTS ANTES de abrir o browser
+        # Isso evita que o browser fique parado esperando TTS durante a gravação
+        from runtime.media_pipeline import TTSService
         tts = TTSService()
+        audio_data: list[dict] = []  # [{file, duration, narration}]
+        cursor_sec = 0.0
+
+        print("Gerando audios TTS...")
+        for idx, event in enumerate(useful, 1):
+            narration = event.get("micro_narracao") or event.get("intencao_semantica") or ""
+            audio_file = None
+            audio_duration = 0.0
+            if narration.strip():
+                audio_out = str(paths.audio_dir / f"step_{idx:03d}.mp3")
+                try:
+                    audio_file = await tts.generate_audio(narration, audio_out)
+                    if audio_file:
+                        try:
+                            from moviepy import AudioFileClip
+                        except ImportError:
+                            from moviepy.editor import AudioFileClip
+                        clip = AudioFileClip(audio_file)
+                        audio_duration = clip.duration
+                        clip.close()
+                        print(f"  TTS [{idx:02d}] {audio_duration:.1f}s — {narration[:60]}")
+                except Exception as tts_err:
+                    print(f"  TTS [{idx:02d}] ERRO: {tts_err}")
+                    audio_file = None
+                    audio_duration = 0.0
+
+            audio_data.append({
+                "file": audio_file,
+                "duration": audio_duration,
+                "narration": narration,
+            })
+
+            if audio_file:
+                manifest.audio_timeline.append(TimelineAudioItem(
+                    step_id=f"step_{idx:03d}",
+                    text=narration,
+                    audio_file=audio_file,
+                    start_sec=cursor_sec,
+                    end_sec=cursor_sec + audio_duration,
+                ))
+                cursor_sec += audio_duration
+
+        if not manifest.audio_timeline:
+            print("Aviso: nenhum audio TTS gerado — video sem narracao.")
+
+        # 5. Inicializa componentes de navegação
         humanizer = HumanizedDelay(
             min_step_duration=cfg.min_step_duration,
             speed_factor=cfg.speed_factor,
         )
 
-        # Lookup de coordenadas do shadow para CoordinateStrategy
         coord_lookup: dict[str, dict] = {}
         for ev in useful:
             el = ev.get("elemento_alvo") or {}
@@ -267,7 +319,6 @@ class TutorialPlayer:
             CoordinateStrategy(coordinate_lookup=lambda t: coord_lookup.get(t.lower())),
         ])
 
-        # Adapters para ActionExecutor
         async def tutorial_click_adapter(page, target):
             if isinstance(target, str):
                 await page.locator(target).first.click()
@@ -298,72 +349,49 @@ class TutorialPlayer:
             humanizer=humanizer,
         )
 
-        # 5. Inicia sessão Playwright
+        # 6. Abre browser e faz login — agora sem bloqueio de TTS
         pw, browser, context, page = await self._setup_session(paths)
 
-        # 6. Login (não em record-only)
         if cfg.mode != "record-only":
             print("Fazendo login no Senior X...")
             await self._do_login(page)
             print(f"Login OK -> {page.url[:80]}")
 
-        # 7. Loop de Steps
-        print(f"Processando {len(useful)} eventos em modo {cfg.mode}...")
-        cursor_sec = 0.0
+        # 7. Loop de Steps — browser visível, sem espera de TTS
+        print(f"\nProcessando {len(useful)} eventos em modo {cfg.mode}...")
         total = len(useful)
+        session_start = time.monotonic()  # marca o inicio da sessao para sincronizacao
 
         for idx, event in enumerate(useful, 1):
-            narration = event.get("micro_narracao") or event.get("intencao_semantica") or ""
+            ad = audio_data[idx - 1]
+            print(f"  [{idx:02d}/{total}] {event.get('business_target', '')[:40]}")
 
-            # Gera áudio TTS
-            audio_file = None
-            audio_duration = 0.0
-            if narration.strip():
-                audio_out = str(paths.audio_dir / f"step_{idx:03d}.mp3")
-                try:
-                    audio_file = await tts.generate_audio(narration, audio_out)
-                    if audio_file:
-                        try:
-                            from moviepy import AudioFileClip
-                        except ImportError:
-                            from moviepy.editor import AudioFileClip
-                        clip = AudioFileClip(audio_file)
-                        audio_duration = clip.duration
-                        clip.close()
-                except Exception:
-                    audio_file = None
-                    audio_duration = 0.0
+            step_start = time.monotonic() - session_start  # tempo real desde o inicio
 
-            # Acumula timeline
-            if audio_file:
-                manifest.audio_timeline.append(TimelineAudioItem(
-                    step_id=f"step_{idx:03d}",
-                    text=narration,
-                    audio_file=audio_file,
-                    start_sec=cursor_sec,
-                    end_sec=cursor_sec + audio_duration,
-                ))
-                cursor_sec += audio_duration
-
-            # Processa o step
             result = await step_proc.process(
                 page=page,
                 event=event,
                 step_index=idx,
                 total_steps=total,
                 lesson_name=cfg.shadow_path.stem,
-                audio_file=audio_file,
-                audio_duration=audio_duration,
+                audio_file=ad["file"],
+                audio_duration=ad["duration"],
             )
+
+            # Atualiza o start_sec do audio com o tempo real do step no video
+            if ad["file"] and manifest.audio_timeline:
+                # Encontra o item correspondente e atualiza com tempo real
+                for item in manifest.audio_timeline:
+                    if item.step_id == f"step_{idx:03d}":
+                        item.start_sec = step_start
+                        item.end_sec = step_start + ad["duration"]
+                        break
 
             status_icon = "OK" if result.status == "success" else "!!"
             print(
-                f"  [{idx:02d}] {status_icon} {result.status:20s} | "
-                f"{event.get('business_target', '')[:35]:35s} | "
-                f"strategy={result.strategy_used or 'none'}"
+                f"         {status_icon} strategy={result.strategy_used or 'none'} | "
+                f"status={result.status} | t={step_start:.1f}s"
             )
-
-            # Salva manifest incremental
             manifest_store.save(manifest)
 
         # 8. Teardown e renderização
@@ -383,7 +411,6 @@ class TutorialPlayer:
 
         await self._render_final_video(manifest, paths)
 
-        # Save final
         manifest_store.save(manifest)
         import shutil
         shutil.copy(

@@ -1,0 +1,47 @@
+{
+  "job_id": "e3edee82fa4a4ffe",
+  "training_id": "e3edee82fa4a4ffe",
+  "lesson_name": "TESTE_DUAL_002_shadow",
+  "created_at": "2026-04-01T17:04:22.937005Z",
+  "browser_video_path": "runtime_artifacts\\tutorials\\e3edee82fa4a4ffe\\raw\\8b24d3343bc26e2e60c7e7de3fd926eb.webm",
+  "output_mp4_path": "runtime_artifacts\\tutorials\\e3edee82fa4a4ffe\\e3edee82fa4a4ffe.mp4",
+  "output_srt_path": "runtime_artifacts\\tutorials\\e3edee82fa4a4ffe\\e3edee82fa4a4ffe.srt",
+  "cut_start_sec": 0.0,
+  "audio_timeline": [
+    {
+      "step_id": "step_001",
+      "text": "Navegar para a seção 'Senior Flow' do sistema.",
+      "audio_file": "runtime_artifacts\\tutorials\\e3edee82fa4a4ffe\\audio\\step_001.mp3",
+      "start_sec": 0.0,
+      "end_sec": 2.88
+    },
+    {
+      "step_id": "step_002",
+      "text": "Navegar para a seção de Gerenciamento Eletrônico de Document",
+      "audio_file": "runtime_artifacts\\tutorials\\e3edee82fa4a4ffe\\audio\\step_002.mp3",
+      "start_sec": 2.88,
+      "end_sec": 6.359999999999999
+    },
+    {
+      "step_id": "step_003",
+      "text": "Acessar a seção de documentos do sistema.",
+      "audio_file": "runtime_artifacts\\tutorials\\e3edee82fa4a4ffe\\audio\\step_003.mp3",
+      "start_sec": 6.359999999999999,
+      "end_sec": 8.93
+    },
+    {
+      "step_id": "step_004",
+      "text": "O usuário quis abrir o item 'Financeiro' para visualizar seu",
+      "audio_file": "runtime_artifacts\\tutorials\\e3edee82fa4a4ffe\\audio\\step_004.mp3",
+      "start_sec": 8.93,
+      "end_sec": 12.53
+    },
+    {
+      "step_id": "step_005",
+      "text": "Acessar opções de gerenciamento ou ações contextuais para o",
+      "audio_file": "runtime_artifacts\\tutorials\\e3edee82fa4a4ffe\\audio\\step_005.mp3",
+      "start_sec": 12.53,
+      "end_sec": 16.11
+    }
+  ]
+}

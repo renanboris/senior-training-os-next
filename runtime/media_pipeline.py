@@ -32,16 +32,45 @@ class TTSService:
         if not text or not text.strip():
             return None
 
-        spoken = re.sub(r"(?i)ecm_ged", "E C M gédi", text)
-        spoken = re.sub(r"GED", "gédi", spoken)
-        spoken = re.sub(r"(?i)senior", "Sênior", spoken)
+        spoken = re.sub(r"(?i)ecm_ged", "E C M gedi", text)
+        spoken = re.sub(r"GED", "gedi", spoken)
+        spoken = re.sub(r"(?i)senior", "Senior", spoken)
 
         out = Path(output_file)
         out.parent.mkdir(parents=True, exist_ok=True)
 
-        # Primeiro passo seguro: Edge TTS. ElevenLabs pode entrar depois por adapter async.
-        await edge_tts.Communicate(spoken, voice, rate="-12%").save(str(out))
-        return str(out)
+        # Tenta OpenAI TTS primeiro (mais confiavel); fallback para edge-tts
+        api_key = os.getenv("OPENAI_API_KEY")
+        if api_key:
+            try:
+                return await self._openai_tts(spoken, str(out), api_key)
+            except Exception:
+                pass  # cai para edge-tts
+
+        # Fallback: edge-tts com voz Francisca pt-BR
+        try:
+            await edge_tts.Communicate(spoken, voice, rate="-12%").save(str(out))
+            return str(out)
+        except Exception as edge_err:
+            raise RuntimeError(f"TTS falhou: {edge_err}")
+
+    async def _openai_tts(self, text: str, output_file: str, api_key: str) -> str:
+        """Gera audio via OpenAI TTS API — voz nova (feminina, proxima pt-BR)."""
+        import httpx
+        async with httpx.AsyncClient(timeout=30) as client:
+            resp = await client.post(
+                "https://api.openai.com/v1/audio/speech",
+                headers={"Authorization": f"Bearer {api_key}"},
+                json={
+                    "model": "tts-1",
+                    "input": text,
+                    "voice": "nova",
+                    "response_format": "mp3",
+                },
+            )
+            resp.raise_for_status()
+            Path(output_file).write_bytes(resp.content)
+        return output_file
 
 
 def format_srt_time(seconds: float) -> str:

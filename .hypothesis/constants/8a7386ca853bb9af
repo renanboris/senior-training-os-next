@@ -1,0 +1,4 @@
+# file: C:\TrainingOS\tutorial\step_processor.py
+# hypothesis_version: 6.151.10
+
+[0.0, 0.05, 0.45, 0.5, 0.7, 0.8, 0.9, 1.5, 2.0, 62.8, 100, 10000, 20000, '_iframe_hint', 'acao', 'alta', 'baixa', 'business_target', 'click', 'clique', 'confianca_captura', 'contexto_semantico', 'digitar', 'digitar_e_enter', 'domcontentloaded', 'double_click', 'duplo_clique', 'elemento_alvo', 'execution_partial', 'failed', 'guide', 'h_pct', 'hover', 'iframe_hint', 'intencao_semantica', 'label_curto', 'low', 'media', 'micro_narracao', 'networkidle', 'partial', 'record-only', 'replay', 'resolution_failed', 'screen_change', 'selecionar', 'select_option', 'seletor_hint', 'skipped', 'success', 'tela_atual', 'tela_id', 'tipo_elemento', 'title', 'type', 'type_and_enter', 'upload', 'url', 'valor_input', 'w_pct', 'x_pct', 'y_pct']

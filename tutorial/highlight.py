@@ -60,9 +60,11 @@ class ElementHighlight:
                 coords_rel.w_pct,
                 coords_rel.h_pct,
             )
-            await safe_evaluate(page_or_frame, script)
+            try:
+                await page_or_frame.evaluate(script)
+            except Exception:
+                pass
         elif selector:
-            # Obtém bounding box do seletor e converte para coordenadas relativas
             bbox_script = f"""() => {{
                 const el = document.querySelector('{selector}');
                 if (!el) return null;
@@ -80,14 +82,16 @@ class ElementHighlight:
                     script = self._build_inject_script(
                         bbox["x_pct"], bbox["y_pct"], bbox["w_pct"], bbox["h_pct"]
                     )
-                    await safe_evaluate(page_or_frame, script)
+                    await page_or_frame.evaluate(script)
             except Exception:
                 pass
         # Se nem coords_rel nem selector: não injeta (sem erro)
 
     async def remove(self, page_or_frame) -> None:
         """Remove o highlight do DOM."""
-        await safe_evaluate(
-            page_or_frame,
-            f"() => {{ const e = document.getElementById('{_HIGHLIGHT_ID}'); if (e) e.remove(); }}",
-        )
+        try:
+            await page_or_frame.evaluate(
+                f"() => {{ const e = document.getElementById('{_HIGHLIGHT_ID}'); if (e) e.remove(); }}"
+            )
+        except Exception:
+            pass

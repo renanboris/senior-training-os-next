@@ -30,13 +30,14 @@ def load_jsonl(path: Path) -> list[dict]:
 
 
 def filter_useful_events(events: list[dict]) -> list[dict]:
-    """Filtra eventos de ruído e sem alvo identificável."""
+    """Filtra eventos de ruído e sem alvo identificável.
+
+    Para o Tutorial Player, preserva eventos de shell também quando
+    eles têm business_target válido — são passos de navegação importantes.
+    """
     filtered: list[dict] = []
-    has_iframe = any(e.get("capture_scope") == "module_iframe" for e in events)
     for e in events:
         if e.get("is_noise", False):
-            continue
-        if has_iframe and e.get("capture_scope") == "shell":
             continue
         if not _compact(e.get("business_target")) and not _compact(
             e.get("elemento_alvo", {}).get("label_curto")
